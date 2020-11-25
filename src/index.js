@@ -2,6 +2,15 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 
+// Import Models
+require("./models/UserCredential");
+
+// Import Middlewares
+const requireAuth = require("./middlewares/requireAuth");
+
+// Import Routes
+const authRoutes = require("./routes/authRoutes");
+
 //Define app
 const app = express();
 
@@ -22,5 +31,8 @@ mongoose.connection.on("error", () => {
 
 // Body Parser
 app.use(bodyParser.json());
+
+// User Routers
+app.use(authRoutes);
 
 module.exports = app;
