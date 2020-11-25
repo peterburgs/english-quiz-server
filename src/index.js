@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+
 // MongoDB Connection
 mongoose.connect(process.env.CONNECTION_STRING, {
   useNewUrlParser: true,
@@ -27,5 +28,5 @@ app.use(bodyParser.json());
 // User Routers
 app.use(authRoutes);
 
-// Export
+
 module.exports = app;
