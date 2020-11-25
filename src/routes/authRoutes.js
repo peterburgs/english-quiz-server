@@ -1,7 +1,8 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
-//const UserCredential = mongoose.model("UserCredential");
+
+const UserCredential = mongoose.model("UserCredential");
 // Router
 const router = express.Router();
 

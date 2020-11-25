@@ -1,20 +1,18 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
-const authRoutes = require("./routes/authRoutes");
-
-// Get userCredential model (without re-create new model)
-//require("./models/UserCredential");
-
-//Define app
-const app = express();
-
 // MongoDB Connection
 mongoose.connect(process.env.CONNECTION_STRING, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useCreateIndex: true,
 });
+// Get userCredential model (without re-create new model)
+require("./models/UserCredential");
+const authRoutes = require("./routes/authRoutes");
+
+//Define app
+const app = express();
 
 // Test connection status
 mongoose.connection.on("connected", () => {
