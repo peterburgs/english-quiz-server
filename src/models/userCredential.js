@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
 // Schema
-const userCredential = new mongoose.Schema({
+const userCredentialSchema = new mongoose.Schema({
   email: {
     type: String,
     unique: true,
@@ -19,7 +19,7 @@ const userCredential = new mongoose.Schema({
 });
 
 // Process model before saving
-userCredential.pre("save", function (next) {
+userCredentialSchema.pre("save", function (next) {
   const user = this;
   if (!user.isModified("password")) {
     return next();
@@ -39,7 +39,7 @@ userCredential.pre("save", function (next) {
 });
 
 // Compare correct password with candidatePassword
-userCredential.methods.comparePassword = function (
+userCredentialSchema.methods.comparePassword = function (
   candidatePassword
 ) {
   const user = this;
@@ -59,4 +59,4 @@ userCredential.methods.comparePassword = function (
     );
   });
 };
-mongoose.model("UserCredential", userCredential);
+mongoose.model("UserCredential", userCredentialSchema);
