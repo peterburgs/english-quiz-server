@@ -8,11 +8,15 @@ const userCredentialSchema = new mongoose.Schema({
     unique: true,
     require: true,
   },
+  password: {
+    type: String,
+    require: true,
+  },
   role: {
     type: String,
     require: true,
   },
-  password: {
+  isActive: {
     type: String,
     require: true,
   },
