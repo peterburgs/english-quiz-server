@@ -1,4 +1,5 @@
 const express = require("express");
+
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 
@@ -41,4 +42,5 @@ router.post("/signup", async (req, res) => {
 });
 
 // Export
+
 module.exports = router;

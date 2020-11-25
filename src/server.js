@@ -11,5 +11,5 @@ server.listen(port);
 if (!server) {
   console.log("*LOG: Could not start server on port " + port);
 } else {
-  console.log("*LOG: Server is running on port " + port + ".");
+  console.log("*LOG: Server is running on port " + port);
 }
