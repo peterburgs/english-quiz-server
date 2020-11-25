@@ -12,6 +12,6 @@ if (!server) {
   console.log("*LOG: Could not start server on port " + port);
 } else {
   console.log(
-    "*LOG: Connected successfully! \nServer listening on port " + port
+    "*LOG: Connected successfully! Listening on port " + port
   );
 }
