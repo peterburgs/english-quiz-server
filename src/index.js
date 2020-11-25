@@ -14,7 +14,7 @@ mongoose.connect(process.env.CONNECTION_STRING, {
 
 // Test connection status
 mongoose.connection.on("connected", () => {
-  console.log("*LOG: Connection has successfully passed the tests!");
+  console.log("*LOG: Connected to MongoDB successfully!");
 });
 mongoose.connection.on("error", () => {
   console.log("*LOG: Fail to connect to MongoDB!");
