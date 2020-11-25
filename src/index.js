@@ -1,6 +1,10 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+const authRoutes = require("./routes/authRoutes");
+
+// Get userCredential model (without re-create new model)
+//require("./models/UserCredential");
 
 //Define app
 const app = express();
@@ -22,5 +26,8 @@ mongoose.connection.on("error", () => {
 
 // Body Parser
 app.use(bodyParser.json());
+// User Routers
+app.use(authRoutes);
 
+// Export
 module.exports = app;
