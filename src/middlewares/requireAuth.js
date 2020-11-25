@@ -16,16 +16,20 @@ module.exports = (req, res, next) => {
   const rawToken = authorization.split(" ");
   const token = rawToken[1];
   console.log(token);
-  jwt.verify(token, "SECRET_KEY", async (error, payload) => {
-    if (error) {
-      console.log(error.message);
-      return res.status(401).json({
-        message: error.message,
-      });
+  jwt.verify(
+    token,
+    process.env.SECRET_KEY,
+    async (error, payload) => {
+      if (error) {
+        console.log(error.message);
+        return res.status(401).json({
+          message: error.message,
+        });
+      }
+      const { userId } = payload;
+      const userCredential = await UserCredential.findById(userId);
+      req.user = userCredential;
+      next();
     }
-    const { userId } = payload;
-    const userCredential = await UserCredential.findById(userId);
-    req.user = userCredential;
-    next();
-  });
+  );
 };
