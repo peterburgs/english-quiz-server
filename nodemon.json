@@ -1,7 +1,0 @@
-{
-  "env": {
-    "CONNECTION_STRING": "mongodb+srv://dbPeter:peterburgs.vn@english-quiz-cluster.3wrpu.mongodb.net/english-quiz?retryWrites=true&w=majority",
-    "PORT": 3001,
-    "SECRET_KEY": "you_cannot_see_this_key"
-  }
-}
