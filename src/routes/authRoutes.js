@@ -11,8 +11,13 @@ const router = express.Router();
 
 // POST method: Sign Up
 router.post("/signup", async (req, res) => {
-  const { email, password } = req.body;
-  const userCredential = new UserCredential({ email, password });
+  const { email, password, role, isActive } = req.body;
+  const userCredential = new UserCredential({
+    email,
+    password,
+    role,
+    isActive,
+  });
   const token = jwt.sign(
     { userCredentialId: userCredential._id },
     String(process.env.SECRET_KEY),

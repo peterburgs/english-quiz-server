@@ -34,11 +34,10 @@ app.use(bodyParser.json());
 // User Routers
 app.use(authRoutes);
 
-// Sample GET
+// GET
 app.get("/", requireAuth, (req, res) => {
   res.status(200).json({
     message: `Welcome ${req.user.email}`,
   });
 });
-
 module.exports = app;
