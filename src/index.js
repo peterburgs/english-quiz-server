@@ -15,6 +15,7 @@ mongoose.connect(process.env.CONNECTION_STRING, {
   useCreateIndex: true,
 });
 
+// Routes
 const authRoutes = require("./routes/authRoutes");
 
 //Define app
