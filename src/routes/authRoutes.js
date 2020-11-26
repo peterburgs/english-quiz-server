@@ -15,7 +15,7 @@ router.post("/signup", async (req, res) => {
   const userCredential = new UserCredential({ email, password });
   const token = jwt.sign(
     { userCredentialId: userCredential._id },
-    "SECRET_KEY",
+    String(process.env.SECRET_KEY),
     {
       // Expiration Time
       expiresIn: "1h",
