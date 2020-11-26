@@ -26,8 +26,10 @@ module.exports = (req, res, next) => {
           message: error.message,
         });
       }
-      const { userId } = payload;
-      const userCredential = await UserCredential.findById(userId);
+      const { userCredentialId } = payload;
+      const userCredential = await UserCredential.findById(
+        userCredentialId
+      );
       req.user = userCredential;
       next();
     }

@@ -1,6 +1,12 @@
+// Get userCredential model (without re-create new model)
+require("./models/UserCredential");
+
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+
+// Middlewares
+const requireAuth = require("./middlewares/requireAuth");
 
 // MongoDB Connection
 mongoose.connect(process.env.CONNECTION_STRING, {
@@ -8,8 +14,7 @@ mongoose.connect(process.env.CONNECTION_STRING, {
   useUnifiedTopology: true,
   useCreateIndex: true,
 });
-// Get userCredential model (without re-create new model)
-require("./models/UserCredential");
+
 const authRoutes = require("./routes/authRoutes");
 
 //Define app
@@ -25,8 +30,14 @@ mongoose.connection.on("error", () => {
 
 // Body Parser
 app.use(bodyParser.json());
+
 // User Routers
 app.use(authRoutes);
 
-
+// GET
+app.get("/", requireAuth, (req, res) => {
+  res.status(200).json({
+    message: `Welcome ${req.user.email}`,
+  });
+});
 module.exports = app;
