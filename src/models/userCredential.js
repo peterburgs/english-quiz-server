@@ -63,4 +63,5 @@ userCredentialSchema.methods.comparePassword = function (
     );
   });
 };
+
 mongoose.model("UserCredential", userCredentialSchema);
