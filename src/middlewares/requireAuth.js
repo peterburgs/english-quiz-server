@@ -18,7 +18,7 @@ module.exports = (req, res, next) => {
   console.log(token);
   jwt.verify(
     token,
-    process.env.SECRET_KEY,
+    String(process.env.SECRET_KEY),
     async (error, payload) => {
       if (error) {
         console.log(error.message);
@@ -30,7 +30,7 @@ module.exports = (req, res, next) => {
       const userCredential = await UserCredential.findById(
         userCredentialId
       );
-      req.user = userCredential;
+      req.userCredential = userCredential;
       next();
     }
   );
