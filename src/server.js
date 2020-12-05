@@ -5,7 +5,7 @@ const server = http.createServer(app);
 console.log("*LOG: Connecting to server...");
 
 // Use port 3001
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 9000;
 
 server.listen(port);
 if (!server) {

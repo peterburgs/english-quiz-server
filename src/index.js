@@ -1,6 +1,6 @@
 // Get userCredential model (without re-create new model)
 require("./models/UserCredential");
-
+require("./models/User");
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
@@ -17,7 +17,7 @@ mongoose.connect(process.env.CONNECTION_STRING, {
 
 // Routes
 const authRoutes = require("./routes/authRoutes");
-
+const userRoutes = require("./routes/userRoutes");
 //Define app
 const app = express();
 
@@ -34,6 +34,7 @@ app.use(bodyParser.json());
 
 // User Routers
 app.use(authRoutes);
+app.use("/user", userRoutes);
 
 // GET
 app.get("/", requireAuth, (req, res) => {

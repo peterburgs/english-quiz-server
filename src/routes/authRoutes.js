@@ -2,8 +2,9 @@ const express = require("express");
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 
-// Import User model
+// Import Models
 const UserCredential = mongoose.model("UserCredential");
+const User = mongoose.model("User");
 
 // Init Router
 const router = express.Router();
@@ -11,6 +12,7 @@ const router = express.Router();
 // POST method: Sign Up
 router.post("/signup", async (req, res) => {
   const { email, password, role, isActive } = req.body;
+
   const userCredential = new UserCredential({
     email,
     password,
@@ -30,15 +32,37 @@ router.post("/signup", async (req, res) => {
     .save()
     .then((result) => {
       console.log("*LOG: ", result);
-      res.status(201).json({
-        message: "Sign up successfully",
-        userCredential,
-        token,
-      });
       console.log("*LOG: User Credential is added successfully");
+      const user = new User({
+        userCredentialId: userCredential._id,
+        fullName: "New Learner",
+        avatarUrl: "../assets/defaultAvatar.jpg",
+        coin: 0,
+        currentLevel: 1,
+        dailyGoal: 0,
+        exp: 0,
+        isTurnOnNotification: true,
+        isTurnOnRemindingViaEmail: true,
+        streak: 0,
+      });
+      user
+        .save()
+        .then((doc) => {
+          console.log("Create User successfully!");
+          res.status(201).json({
+            user: doc,
+            userCredential,
+            token,
+          });
+        })
+        .catch((err) => {
+          console.log("Error: ", err);
+          res.status(500).json({ message: "Cannot create user" });
+        });
     })
     .catch((error) => {
-      console.log("*LOG: " + error.message);
+      console.log(userCredential);
+      console.log("*LOG: *error " + error.message);
       res.status(500).json({
         message: error.message,
       });
