@@ -19,11 +19,11 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-  currentLevel: {
+  currentLevelOrder: {
     type: Number,
     default: 1,
   },
-  dailyGoal: {
+  dailyGoalTime: {
     type: Number,
     default: 0,
   },

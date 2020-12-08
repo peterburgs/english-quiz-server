@@ -1,6 +1,8 @@
 // Get userCredential model (without re-create new model)
 require("./models/UserCredential");
 require("./models/User");
+require("./models/Level");
+//
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
@@ -18,6 +20,8 @@ mongoose.connect(process.env.CONNECTION_STRING, {
 // Routes
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
+const levelRoutes = require("./routes/levelRoutes");
+
 //Define app
 const app = express();
 
@@ -32,10 +36,10 @@ mongoose.connection.on("error", () => {
 // Body Parser
 app.use(bodyParser.json());
 
-// User Routers
+// Use Routers
 app.use(authRoutes);
-app.use("/user", userRoutes);
-
+app.use("/users", userRoutes);
+app.use("/levels", levelRoutes);
 // GET
 app.get("/", requireAuth, (req, res) => {
   res.status(200).json({
