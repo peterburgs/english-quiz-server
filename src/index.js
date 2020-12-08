@@ -3,6 +3,7 @@ require("./models/UserCredential");
 require("./models/User");
 require("./models/Level");
 require("./models/Topic");
+require("./models/Progress");
 //
 const express = require("express");
 const mongoose = require("mongoose");
@@ -23,6 +24,7 @@ const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const levelRoutes = require("./routes/levelRoutes");
 const topicRoutes = require("./routes/topicRoutes");
+const progressRoutes = require("./routes/progressRoutes");
 
 //Define app
 const app = express();
@@ -43,10 +45,14 @@ app.use(authRoutes);
 app.use("/users", userRoutes);
 app.use("/levels", levelRoutes);
 app.use("/topics", topicRoutes);
+app.use("/progresses", progressRoutes);
+
 // GET
 app.get("/", requireAuth, (req, res) => {
   res.status(200).json({
     message: `Welcome ${req.user.email}`,
   });
 });
+
+// Export
 module.exports = app;

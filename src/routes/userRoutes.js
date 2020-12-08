@@ -12,7 +12,7 @@ router.use(requireAuth);
 router.get("/", async (req, res) => {
   const user = await User.findOne({
     userCredentialId: req.userCredential._id,
-  });
+  }).populate("progress");
   if (user) {
     console.log(user);
     res.status(200).json({

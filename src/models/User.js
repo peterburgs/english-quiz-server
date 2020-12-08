@@ -43,6 +43,12 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  progress: [
+    {
+      type: mongoose.Types.ObjectId,
+      ref: "Progress",
+    },
+  ],
 });
 
 mongoose.model("User", userSchema);
