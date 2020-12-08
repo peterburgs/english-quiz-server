@@ -2,6 +2,7 @@
 require("./models/UserCredential");
 require("./models/User");
 require("./models/Level");
+require("./models/Topic");
 //
 const express = require("express");
 const mongoose = require("mongoose");
@@ -21,6 +22,7 @@ mongoose.connect(process.env.CONNECTION_STRING, {
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const levelRoutes = require("./routes/levelRoutes");
+const topicRoutes = require("./routes/topicRoutes");
 
 //Define app
 const app = express();
@@ -40,6 +42,7 @@ app.use(bodyParser.json());
 app.use(authRoutes);
 app.use("/users", userRoutes);
 app.use("/levels", levelRoutes);
+app.use("/topics", topicRoutes);
 // GET
 app.get("/", requireAuth, (req, res) => {
   res.status(200).json({
