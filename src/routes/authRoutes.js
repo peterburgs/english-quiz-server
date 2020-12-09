@@ -12,7 +12,23 @@ const router = express.Router();
 // POST method: Sign Up
 router.post("/signup", async (req, res) => {
   const { email, password, role, isActive } = req.body;
-
+  const requestForm = {
+    method: "POST",
+    url: "/sigup",
+    email: { type: "String", required: true },
+    password: { type: "String", required: true },
+    role: {
+      type: Number,
+      // 1: Admin
+      // 2: Learner
+      required: false,
+      default: 2,
+    },
+    isActive: {
+      type: Boolean,
+      required: false,
+    },
+  };
   const userCredential = new UserCredential({
     email,
     password,
@@ -27,14 +43,11 @@ router.post("/signup", async (req, res) => {
       expiresIn: "1h",
     }
   );
-  console.log("*LOG: Saving User Credential to database");
-  await userCredential
-    .save()
-    .then((result) => {
-      console.log("*LOG: ", result);
-      console.log("*LOG: User Credential is added successfully");
+  try {
+    const userCredentialResult = await userCredential.save();
+    if (userCredentialResult != null) {
       const user = new User({
-        userCredentialId: userCredential._id,
+        userCredential: userCredential._id,
         fullName: "New Learner",
         avatarUrl: "../assets/defaultAvatar.jpg",
         coin: 0,
@@ -45,38 +58,43 @@ router.post("/signup", async (req, res) => {
         isTurnOnRemindingViaEmail: true,
         streak: 0,
       });
-      user
-        .save()
-        .then((doc) => {
-          console.log("Create User successfully!");
-          res.status(201).json({
-            user: doc,
-            userCredential,
-            token,
-          });
-        })
-        .catch((err) => {
-          console.log("Error: ", err);
-          res.status(500).json({ message: "Cannot create user" });
+      const userResult = await user.save();
+
+      if (user != null) {
+        console.log("Create User successfully!");
+        res.status(201).json({
+          message: "Success",
+          user: userResult,
+          userCredential,
+          token,
+          requestForm,
         });
-    })
-    .catch((error) => {
-      console.log(userCredential);
-      console.log("*LOG: *error " + error.message);
-      res.status(500).json({
-        message: error.message,
-      });
+      }
+    } else {
+      res.status(500).json({ message: "Fail" });
+    }
+  } catch (error) {
+    res.status(500).json({
+      message: "Fail",
+      requestForm,
     });
+  }
 });
 
-// GET method: Sign In
+// POST method: Sign In
 router.post("/signin", async (req, res) => {
   const { email, password } = req.body;
-
+  const requestForm = {
+    method: "POST",
+    url: "/signin",
+    email: { type: "String", required: true },
+    password: { type: "String", required: true },
+  };
   // Validate empty input
   if (!email || !password) {
     return res.status(422).json({
       error: "Email or Password is incorrect",
+      requestForm,
     });
   }
 
@@ -86,6 +104,7 @@ router.post("/signin", async (req, res) => {
   if (!userCredential) {
     return res.status(404).json({
       error: "Email not found",
+      requestForm,
     });
   }
 
@@ -98,12 +117,14 @@ router.post("/signin", async (req, res) => {
       String(process.env.SECRET_KEY)
     );
     res.status(200).json({
-      message: "Log in successful",
+      message: "Success",
       token,
+      requestForm,
     });
   } catch (err) {
     return res.status(422).json({
       error: "Invalid email or password",
+      requestForm,
     });
   }
 });

@@ -2,10 +2,9 @@ const mongoose = require("mongoose");
 
 // Schema
 const userSchema = new mongoose.Schema({
-  userCredentialId: {
+  userCredential: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "UserCredential",
-    required: true,
   },
   fullName: {
     type: String,
@@ -22,6 +21,7 @@ const userSchema = new mongoose.Schema({
   currentLevelOrder: {
     type: Number,
     default: 1,
+    required: true,
   },
   dailyGoalTime: {
     type: Number,

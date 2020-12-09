@@ -9,6 +9,23 @@ const router = express.Router();
 
 // POST Method: Create a new Progress
 router.post("/", async (req, res) => {
+  const requestForm = {
+    method: "POST",
+    url: "/progresses/",
+    completedLesson: {
+      type: Number,
+      default: 0,
+      required: true,
+    },
+    topicId: {
+      type: "String",
+      ref: "Topic",
+    },
+    userId: {
+      type: mongoose.Types.ObjectId,
+      ref: "User",
+    },
+  };
   const body = req.body;
   try {
     const topic = await Topic.findOne({ _id: body.topicId });
@@ -27,24 +44,19 @@ router.post("/", async (req, res) => {
         progress,
         user,
         topic,
+        requestForm,
       });
     } else {
       res.status(500).json({
         message: "Cannot create progress!",
-        requestForm: {
-          topicId: " type: String ",
-          user: " type: String ",
-        },
+        requestForm,
       });
     }
   } catch (err) {
     res.status(500).json({
       message: "Cannot create progress!",
       err,
-      requestForm: {
-        topicId: " type: String ",
-        user: " type: String ",
-      },
+      requestForm,
     });
   }
 });
