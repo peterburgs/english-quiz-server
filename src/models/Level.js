@@ -14,7 +14,6 @@ const levelSchema = new mongoose.Schema({
   isRemoved: {
     type: Boolean,
     default: false,
-    required: true,
   },
   topics: [
     {

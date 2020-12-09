@@ -12,13 +12,15 @@ const userCredentialSchema = new mongoose.Schema({
     type: String,
     require: true,
   },
+  // 1: Admin
+  // 2: Learner
   role: {
-    type: String,
-    require: false,
+    type: Number,
+    default: 2,
   },
   isActive: {
     type: String,
-    require: false,
+    default: true,
   },
 });
 
