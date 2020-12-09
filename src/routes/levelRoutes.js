@@ -12,6 +12,8 @@ router.get("/", async (req, res) => {
   };
   try {
     const level = await Level.find();
+    console.log("[levelRoutes.js : 15] *level: ", level)
+
     if (level.length != 0) {
       res.status(200).json({
         message: "All Levels found!",
@@ -19,12 +21,16 @@ router.get("/", async (req, res) => {
         requestForm,
       });
     } else {
+      console.log("[levelRoutes.js : 24] *error at levelRoutes.js ")
+
       res.status(404).json({
         message: "Cannot find any Level!",
         requestForm,
       });
     }
   } catch (err) {
+    console.log("[levelRoutes.js : 32] *err: ", err)
+
     res.status(404).json({
       message: "Cannot find any Level!",
       err,
@@ -35,6 +41,8 @@ router.get("/", async (req, res) => {
 
 // POST Method: Create a new Level
 router.post("/", async (req, res) => {
+  console.log("[levelRoutes.js : 44] *req.body: ", req.body)
+
   const requestForm = {
     method: "POST",
     url: "/levels/",
@@ -46,6 +54,7 @@ router.post("/", async (req, res) => {
       type: Number,
       default: 0,
       required: true,
+      unique: true
     },
     isRemoved: {
       type: Boolean,
@@ -58,16 +67,20 @@ router.post("/", async (req, res) => {
     order: body.order,
     isRemoved: body.isRemoved,
   });
+  console.log("[levelRoutes.js : 70] *level: ", level)
+
   try {
     const result = await level.save();
+    console.log("[levelRoutes.js : 74] *result: ", result)
+
     if (result) {
-      console.log("Level is create successfully!", result);
       res.status(201).json({
         message: "Level is create successfully!",
         level: result,
         requestForm,
       });
     } else {
+      console.log("[levelRoutes.js : 83] *error at levelRoutes.js ")
       res.status(500).json({
         message: "Cannot create level!",
         level: result,
@@ -75,6 +88,8 @@ router.post("/", async (req, res) => {
       });
     }
   } catch (err) {
+    console.log("[levelRoutes.js : 91] *error: ", err)
+
     res.status(500).json({
       message: "Cannot create level!",
       err,

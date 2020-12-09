@@ -13,6 +13,7 @@ const topicSchema = new mongoose.Schema({
   order: {
     type: Number,
     required: true,
+    unique:true
   },
   isRemoved: {
     type: Boolean,
@@ -21,6 +22,7 @@ const topicSchema = new mongoose.Schema({
   level: {
     type: mongoose.Types.ObjectId,
     ref: "Level",
+    required:true
   },
 });
 

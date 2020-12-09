@@ -16,6 +16,10 @@ const progressSchema = new mongoose.Schema({
     type: mongoose.Types.ObjectId,
     ref: "User",
   },
+  userTopic: {
+    type: String,
+    unique: true,
+  }
 });
 
 mongoose.model("Progress", progressSchema);
