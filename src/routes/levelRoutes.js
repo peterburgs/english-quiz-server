@@ -11,8 +11,8 @@ router.get("/", async (req, res) => {
     url: "/levels/",
   };
   try {
-    const level = await Level.find();
-    console.log("[levelRoutes.js : 15] *level: ", level)
+    const level = await Level.find().populate("topics");
+    console.log("[levelRoutes.js] *level: ", level)
 
     if (level.length != 0) {
       res.status(200).json({
@@ -21,7 +21,7 @@ router.get("/", async (req, res) => {
         requestForm,
       });
     } else {
-      console.log("[levelRoutes.js : 24] *error at levelRoutes.js ")
+      console.log("[levelRoutes.js] *error at levelRoutes.js ")
 
       res.status(404).json({
         message: "Cannot find any Level!",
@@ -29,7 +29,7 @@ router.get("/", async (req, res) => {
       });
     }
   } catch (err) {
-    console.log("[levelRoutes.js : 32] *err: ", err)
+    console.log("[levelRoutes.js] *err: ", err)
 
     res.status(404).json({
       message: "Cannot find any Level!",
@@ -41,7 +41,7 @@ router.get("/", async (req, res) => {
 
 // POST Method: Create a new Level
 router.post("/", async (req, res) => {
-  console.log("[levelRoutes.js : 44] *req.body: ", req.body)
+  console.log("[levelRoutes.js] *req.body: ", req.body)
 
   const requestForm = {
     method: "POST",
@@ -67,11 +67,11 @@ router.post("/", async (req, res) => {
     order: body.order,
     isRemoved: body.isRemoved,
   });
-  console.log("[levelRoutes.js : 70] *level: ", level)
+  console.log("[levelRoutes.js] *level: ", level)
 
   try {
     const result = await level.save();
-    console.log("[levelRoutes.js : 74] *result: ", result)
+    console.log("[levelRoutes.js] *result: ", result)
 
     if (result) {
       res.status(201).json({
@@ -80,7 +80,7 @@ router.post("/", async (req, res) => {
         requestForm,
       });
     } else {
-      console.log("[levelRoutes.js : 83] *error at levelRoutes.js ")
+      console.log("[levelRoutes.js] *error at levelRoutes.js ")
       res.status(500).json({
         message: "Cannot create level!",
         level: result,
@@ -88,7 +88,7 @@ router.post("/", async (req, res) => {
       });
     }
   } catch (err) {
-    console.log("[levelRoutes.js : 91] *error: ", err)
+    console.log("[levelRoutes.js] *error: ", err)
 
     res.status(500).json({
       message: "Cannot create level!",

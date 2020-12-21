@@ -8,6 +8,7 @@ const UserCredential = mongoose.model("UserCredential");
 module.exports = (req, res, next) => {
   const { authorization } = req.headers;
   if (!authorization) {
+    console.log("[requireAuth.js] un")
     return res.status(401).json({
       message:
         "You are not authenticated! Please sign in to continue.",
@@ -15,23 +16,29 @@ module.exports = (req, res, next) => {
   }
   const rawToken = authorization.split(" ");
   const token = rawToken[1];
-  console.log(token);
+  console.log("[requireAuth.js] *token:", token);
   jwt.verify(
     token,
     String(process.env.SECRET_KEY),
     async (error, payload) => {
       if (error) {
-        console.log(error.message);
+        console.log("[requireAuth.js] *error: " + error);
         return res.status(401).json({
-          message: error.message,
+          message: "[requireAuth.js] *error: " + error,
         });
       }
-      const { userCredentialId } = payload;
-      const userCredential = await UserCredential.findById(
-        userCredentialId
-      );
-      req.userCredential = userCredential;
-      next();
+      const { userCredential } = payload;
+      try {
+        const userCredentialResult = await UserCredential.findById(
+          userCredential
+        );
+        console.log("[requireAuth.js] *userCredentialResult:", userCredentialResult)
+        req.userCredential = userCredentialResult;
+        next();
+      } catch (err) {
+        console.log(err)
+      }
+
     }
   );
 };

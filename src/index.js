@@ -18,6 +18,13 @@ mongoose.connect(process.env.CONNECTION_STRING, {
   useUnifiedTopology: true,
   useCreateIndex: true,
 });
+// Test connection status
+mongoose.connection.on("connected", () => {
+  console.log("*LOG: Connected to MongoDB successfully!");
+});
+mongoose.connection.on("error", () => {
+  console.log("*LOG: Fail to connect to MongoDB!");
+});
 
 // Routes
 const authRoutes = require("./routes/authRoutes");
@@ -29,13 +36,6 @@ const progressRoutes = require("./routes/progressRoutes");
 //Define app
 const app = express();
 
-// Test connection status
-mongoose.connection.on("connected", () => {
-  console.log("*LOG: Connected to MongoDB successfully!");
-});
-mongoose.connection.on("error", () => {
-  console.log("*LOG: Fail to connect to MongoDB!");
-});
 
 // Body Parser
 app.use(bodyParser.json());
