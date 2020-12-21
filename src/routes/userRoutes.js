@@ -10,19 +10,42 @@ router.use(requireAuth);
 
 // GET Method: get a user
 router.get("/", async (req, res) => {
-  const user = await User.findOne({
-    userCredentialId: req.userCredential._id,
-  }).populate("progress");
-  if (user) {
-    console.log(user);
-    res.status(200).json({
-      message: "Found!",
-      user,
-    });
-  } else {
-    console.log("User not found");
-    res.status(404).json({
+  console.log("[userRoutes.js] *req.body: ", req.body)
+
+  const requestForm = {
+    method: "GET",
+    url: "/users/",
+    userCredential: {
+      type: mongoose.Types.ObjectId,
+      ref: "UserCredential",
+    },
+  };
+  try {
+    const user = await User.findOne({
+      userCredential: req.userCredential,
+    }).populate("progress");
+    console.log("[userRoutes.js] *user: ", user)
+
+    if (user) {
+      console.log("[userRoutes.js] *user: ", user)
+      res.status(200).json({
+        message: "Success!",
+        user,
+        requestForm,
+      });
+    } else {
+      console.log("[userRoutes.js] User not found");
+      res.status(404).json({
+        message: "User not found",
+        requestForm,
+      });
+    }
+  } catch (err) {
+    console.log("[userRoutes.js] *err: ", err)
+
+    res.status(500).json({
       message: "User not found",
+      requestForm,
     });
   }
 });

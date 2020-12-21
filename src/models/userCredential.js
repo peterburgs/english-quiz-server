@@ -1,10 +1,12 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+require('mongoose-type-email');
 
+mongoose.SchemaTypes.Email.defaults.message = 'Email address is invalid'
 // Schema
 const userCredentialSchema = new mongoose.Schema({
   email: {
-    type: String,
+    type: mongoose.SchemaTypes.Email,
     unique: true,
     require: true,
   },
@@ -12,13 +14,15 @@ const userCredentialSchema = new mongoose.Schema({
     type: String,
     require: true,
   },
+  // 1: Admin
+  // 2: Learner
   role: {
-    type: String,
-    require: false,
+    type: Number,
+    default: 2,
   },
   isActive: {
     type: String,
-    require: false,
+    default: true,
   },
 });
 

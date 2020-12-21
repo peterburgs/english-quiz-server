@@ -12,16 +12,17 @@ const topicSchema = new mongoose.Schema({
   },
   order: {
     type: Number,
-    default: 0,
+    required: true,
+    unique:true
   },
   isRemoved: {
     type: Boolean,
     default: false,
-    required: true,
   },
   level: {
     type: mongoose.Types.ObjectId,
     ref: "Level",
+    required:true
   },
 });
 

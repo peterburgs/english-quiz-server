@@ -10,11 +10,11 @@ const levelSchema = new mongoose.Schema({
     type: Number,
     default: 0,
     required: true,
+    unique:true
   },
   isRemoved: {
     type: Boolean,
     default: false,
-    required: true,
   },
   topics: [
     {
