@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema({
   },
   avatarUrl: {
     type: String,
-    default: "../assets/defaultAvatar.jpg",
+    default: "../assets/avatar/defaultAvatar.jpg",
   },
   coin: {
     type: Number,

@@ -4,16 +4,16 @@ const mongoose = require("mongoose");
 const topicSchema = new mongoose.Schema({
   name: {
     type: String,
-    default: "New Level",
+    default: "New Topic",
   },
   imageUrl: {
     type: String,
-    default: "src\\assets\\defaultAvatar.jpg",
+    default: "src\assets\avatar\defaultAvatar.jpg",
   },
   order: {
     type: Number,
     required: true,
-    unique:true
+    unique: true
   },
   isRemoved: {
     type: Boolean,
@@ -22,7 +22,7 @@ const topicSchema = new mongoose.Schema({
   level: {
     type: mongoose.Types.ObjectId,
     ref: "Level",
-    required:true
+    required: true
   },
 });
 

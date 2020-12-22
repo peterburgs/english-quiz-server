@@ -9,28 +9,22 @@ const requireAuth = require("../middlewares/requireAuth");
 router.use(requireAuth);
 
 // GET Method: get a user
-router.get("/", async (req, res) => {
-  console.log("[userRoutes.js] *req.body: ", req.body)
-
+router.get("/:userCredentialId", async (req, res) => {
   const requestForm = {
     method: "GET",
     url: "/users/",
-    userCredential: {
-      type: mongoose.Types.ObjectId,
-      ref: "UserCredential",
-    },
   };
   try {
-    const user = await User.findOne({
-      userCredential: req.userCredential,
-    }).populate("progress");
-    console.log("[userRoutes.js] *user: ", user)
-
-    if (user) {
-      console.log("[userRoutes.js] *user: ", user)
+    const id = req.params.userCredentialId;
+    const user = await User.find({ userCredential: id }).populate(
+      "progress"
+    );
+    const progress = user.progress;
+    if (user.length) {
       res.status(200).json({
         message: "Success!",
         user,
+        progress,
         requestForm,
       });
     } else {
@@ -41,7 +35,7 @@ router.get("/", async (req, res) => {
       });
     }
   } catch (err) {
-    console.log("[userRoutes.js] *err: ", err)
+    console.log("[userRoutes.js] *err: ", err);
 
     res.status(500).json({
       message: "User not found",

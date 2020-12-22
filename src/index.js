@@ -1,9 +1,11 @@
-// Get userCredential model (without re-create new model)
+// Get models
 require("./models/UserCredential");
 require("./models/User");
 require("./models/Level");
 require("./models/Topic");
 require("./models/Progress");
+require("./models/Pool");
+require("./models/Question");
 //
 const express = require("express");
 const mongoose = require("mongoose");
@@ -32,10 +34,13 @@ const userRoutes = require("./routes/userRoutes");
 const levelRoutes = require("./routes/levelRoutes");
 const topicRoutes = require("./routes/topicRoutes");
 const progressRoutes = require("./routes/progressRoutes");
+const poolRoutes = require("./routes/poolRoutes");
+const questionRoutes = require("./routes/questionRoutes");
 
 //Define app
 const app = express();
-
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Body Parser
 app.use(bodyParser.json());
@@ -63,6 +68,8 @@ app.use("/users", userRoutes);
 app.use("/levels", levelRoutes);
 app.use("/topics", topicRoutes);
 app.use("/progresses", progressRoutes);
+app.use("/pools", poolRoutes);
+app.use("/questions", questionRoutes);
 
 // GET
 app.get("/", requireAuth, (req, res) => {
