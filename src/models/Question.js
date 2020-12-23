@@ -4,11 +4,11 @@ const mongoose = require("mongoose");
 const questionSchema = new mongoose.Schema({
   questionMedia: {
     type: String,
-    default: "src\assets\topicImages\1608569850175-meme.jpg",
+    default: "srcassets\topicImages\1608569850175-meme.jpg",
   },
   questionText: {
     type: String,
-    required: true
+    required: true,
   },
   pool: {
     type: mongoose.Types.ObjectId,
@@ -17,6 +17,26 @@ const questionSchema = new mongoose.Schema({
   isRemoved: {
     type: Boolean,
     default: false,
+  },
+  singleSelectionAnswers: {
+    type: Array,
+  },
+  fillInBlankAnswers: {
+    type: String,
+  },
+  arrangeAnswers: {
+    type: Array,
+  },
+  type: {
+    type: String,
+    required: true,
+  },
+  code: {
+    type: String,
+  },
+  topic: {
+    type: mongoose.Types.ObjectId,
+    ref: "Topic",
   },
 });
 

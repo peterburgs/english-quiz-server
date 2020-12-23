@@ -8,12 +8,12 @@ const topicSchema = new mongoose.Schema({
   },
   imageUrl: {
     type: String,
-    default: "src\assets\avatar\defaultAvatar.jpg",
+    default: "srcassetsavatardefaultAvatar.jpg",
   },
   order: {
     type: Number,
     required: true,
-    unique: true
+    unique: true,
   },
   isRemoved: {
     type: Boolean,
@@ -22,8 +22,14 @@ const topicSchema = new mongoose.Schema({
   level: {
     type: mongoose.Types.ObjectId,
     ref: "Level",
-    required: true
+    required: true,
   },
+  questions: [
+    {
+      type: mongoose.Types.ObjectId,
+      ref: "Question",
+    },
+  ],
 });
 
 mongoose.model("Topic", topicSchema);

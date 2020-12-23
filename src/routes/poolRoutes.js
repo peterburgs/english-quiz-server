@@ -45,7 +45,37 @@ router.get("/", async (req, res) => {
     });
   }
 });
-
+//GET Method: get a specific pool
+router.get("/:poolId", async (req, res) => {
+  const requestForm = {
+    method: "GET",
+    url: "/pools/:poolId",
+  };
+  try {
+    const id = req.params.poolId;
+    const pool = await Pool.find({ _id: id }).populate("questions");
+    if (pool) {
+      res.status(200).json({
+        message: "Found!",
+        pool: pool,
+        requestForm,
+      });
+    } else {
+      res.status(404).json({
+        message: "No document found!",
+        pool: pool,
+        requestForm,
+      });
+    }
+  } catch (err) {
+    console.log("[levelRoutes.js] *err: ", err);
+    res.status(404).json({
+      message: "No document found!",
+      error: err.message,
+      requestForm,
+    });
+  }
+});
 // POST Method: Create a new Pool
 router.post("/", async (req, res) => {
   const requestForm = {
