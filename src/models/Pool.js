@@ -10,6 +10,12 @@ const poolSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  questions: [
+    {
+      type: mongoose.Types.ObjectId,
+      ref: "Question",
+    },
+  ],
 });
 
 mongoose.model("Pool", poolSchema);
