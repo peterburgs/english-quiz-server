@@ -8,7 +8,6 @@ const UserCredential = mongoose.model("UserCredential");
 module.exports = (req, res, next) => {
   const { authorization } = req.headers;
   if (!authorization) {
-    console.log("[requireAuth.js] un");
     return res.status(401).json({
       message:
         "You are not authenticated! Please sign in to continue.",

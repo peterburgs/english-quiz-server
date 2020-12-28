@@ -142,8 +142,6 @@ router.post("/", upload.single("topicImage"), async (req, res) => {
       order: req.body.order,
       level: level._id,
     });
-    console.log(topic);
-
     const result = await topic.save();
     level.topics.push(result);
     await level.save();
@@ -323,7 +321,7 @@ router.post("/edit", async (req, res) => {
     // Clone new questions from request
     for (let i = 0; i < tempQuestions.length; i++) {
       const question = await Question.findOne({
-        _id: tempQuestions[i],
+        _id: tempQuestions[i].question,
       });
       let clonedQuestion = new Question({
         ..._.pick(question, [
@@ -336,6 +334,7 @@ router.post("/edit", async (req, res) => {
           "code",
         ]),
         topic: topic._id,
+        lessonOrder: tempQuestions[i].lessonOrder,
       });
       const result = await clonedQuestion.save();
       topic.questions.push(result);

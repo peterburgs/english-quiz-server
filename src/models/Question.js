@@ -34,6 +34,9 @@ const questionSchema = new mongoose.Schema({
   code: {
     type: String,
   },
+  lessonOrder: {
+    type: Number,
+  },
   topic: {
     type: mongoose.Types.ObjectId,
     ref: "Topic",

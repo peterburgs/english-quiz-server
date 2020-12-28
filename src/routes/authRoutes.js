@@ -11,7 +11,6 @@ const router = express.Router();
 
 // POST method: Sign Up
 router.post("/signup", async (req, res) => {
-  console.log("[authRoutes.js] *req.body: ", req.body)
   const { email, password, role, isActive } = req.body;
   const requestForm = {
     method: "POST",
@@ -36,7 +35,6 @@ router.post("/signup", async (req, res) => {
     role,
     isActive,
   });
-  console.log("[authRoutes.js] *userCredential: ", userCredential)
   const token = jwt.sign(
     { userCredential: userCredential._id },
     String(process.env.SECRET_KEY),
@@ -45,10 +43,8 @@ router.post("/signup", async (req, res) => {
       expiresIn: "1h",
     }
   );
-  console.log("[authRoutes.js] *token: ", token)
   try {
     const userCredentialResult = await userCredential.save();
-    console.log("[authRoutes.js] *userCredentialResult: ", userCredentialResult)
     if (userCredentialResult != null) {
       const user = new User({
         userCredential: userCredential._id,
@@ -63,10 +59,8 @@ router.post("/signup", async (req, res) => {
         streak: 0,
       });
       const userResult = await user.save();
-      console.log("[authRoutes.js] *userResult: ", userResult)
 
       if (userResult != null) {
-        console.log("[authRoutes.js] Create User successfully!");
         res.status(201).json({
           message: "Success",
           user: userResult,
@@ -76,11 +70,9 @@ router.post("/signup", async (req, res) => {
         });
       }
     } else {
-      console.log("[authRoutes.js] Error")
       res.status(500).json({ message: "Fail" });
     }
   } catch (error) {
-    console.log("[authRoutes.js] ", error)
     res.status(500).json({
       message: "Fail",
       error,
@@ -91,7 +83,6 @@ router.post("/signup", async (req, res) => {
 
 // POST method: Sign In
 router.post("/signin", async (req, res) => {
-  console.log("[authRoutes.js] *request.body: ", req.body)
   const { email, password } = req.body;
   const requestForm = {
     method: "POST",
@@ -108,7 +99,6 @@ router.post("/signin", async (req, res) => {
   }
 
   const userCredential = await UserCredential.findOne({ email });
-  console.log("[authRoutes.js] *userCredential: ", userCredential)
 
   // Validate email is existed or not
   if (!userCredential) {
@@ -126,14 +116,12 @@ router.post("/signin", async (req, res) => {
       { userCredential: userCredential._id },
       String(process.env.SECRET_KEY)
     );
-    console.log("[authRoutes.js] *still sign in... ")
     res.status(200).json({
       userCredential,
       message: "Success",
       token,
       requestForm,
     });
-    console.log("[authRoutes.js] *signed in ")
   } catch (err) {
     console.log("[authRoutes.js] *err: ", err)
 

@@ -12,7 +12,6 @@ router.get("/", async (req, res) => {
   };
   try {
     const level = await Level.find().populate("topics");
-    console.log("[levelRoutes.js] *level: ", level)
 
     if (level.length != 0) {
       res.status(200).json({
@@ -21,16 +20,12 @@ router.get("/", async (req, res) => {
         requestForm,
       });
     } else {
-      console.log("[levelRoutes.js] *error at levelRoutes.js ")
-
       res.status(404).json({
         message: "Cannot find any Level!",
         requestForm,
       });
     }
   } catch (err) {
-    console.log("[levelRoutes.js] *err: ", err)
-
     res.status(404).json({
       message: "Cannot find any Level!",
       err,
@@ -41,8 +36,6 @@ router.get("/", async (req, res) => {
 
 // POST Method: Create a new Level
 router.post("/", async (req, res) => {
-  console.log("[levelRoutes.js] *req.body: ", req.body)
-
   const requestForm = {
     method: "POST",
     url: "/levels/",
@@ -67,11 +60,9 @@ router.post("/", async (req, res) => {
     order: body.order,
     isRemoved: body.isRemoved,
   });
-  console.log("[levelRoutes.js] *level: ", level)
 
   try {
     const result = await level.save();
-    console.log("[levelRoutes.js] *result: ", result)
 
     if (result) {
       res.status(201).json({
