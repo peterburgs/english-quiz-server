@@ -114,17 +114,21 @@ router.post("/signin", async (req, res) => {
 
     const token = jwt.sign(
       { userCredential: userCredential._id },
-      String(process.env.SECRET_KEY)
+      String(process.env.SECRET_KEY),
+      {
+        // Expiration Time
+        expiresIn: "1h",
+      }
     );
     res.status(200).json({
       userCredential,
       message: "Success",
       token,
+      expiresIn: 1,
       requestForm,
     });
   } catch (err) {
-    console.log("[authRoutes.js] *err: ", err)
-
+    console.log("[authRoutes.js] *err: ", err);
     return res.status(422).json({
       error: "Invalid email or password",
       requestForm,

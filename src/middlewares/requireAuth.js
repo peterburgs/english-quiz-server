@@ -15,11 +15,13 @@ module.exports = (req, res, next) => {
   }
   const rawToken = authorization.split(" ");
   const token = rawToken[1];
+
   jwt.verify(
     token,
     String(process.env.SECRET_KEY),
     async (error, payload) => {
       if (error) {
+        console.log("requireAuth cannot verify token");
         return res.status(401).json({
           message: "[requireAuth.js] *error: " + error,
         });
