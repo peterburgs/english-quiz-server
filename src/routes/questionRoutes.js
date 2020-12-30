@@ -14,16 +14,42 @@ router.get("/", async (req, res) => {
     method: "GET",
     url: "/questions/",
   };
-  const questions = await Question.find({});
-  if (questions.length != 0) {
-    res.status(200).json({
-      message: "Found!",
-      questions: questions,
-      requestForm,
-    });
-  } else {
-    res.status(404).json({
-      message: "No document found!",
+  const poolId = req.query.poolId;
+  const topicId = req.query.topicId;
+  let questions = null;
+  try {
+    if (poolId) {
+      questions = await Question.find({
+        pool: poolId,
+        isRemoved: false,
+      }).exec();
+    } else if (topicId) {
+      questions = await Question.find({
+        topic: topicId,
+        isRemoved: false,
+      }).exec();
+    } else {
+      questions = await Question.find({
+        isRemoved: false,
+      }).exec();
+    }
+    if (questions.length != 0) {
+      res.status(200).json({
+        message: "Found!",
+        questions: questions,
+        requestForm,
+      });
+    } else {
+      res.status(200).json({
+        message: "No document found!",
+        questions: [],
+        requestForm,
+      });
+    }
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).json({
+      message: "No document found!!",
       requestForm,
     });
   }

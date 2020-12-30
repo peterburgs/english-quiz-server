@@ -11,9 +11,45 @@ router.get("/", async (req, res) => {
     url: "/levels/",
   };
   try {
-    const level = await Level.find().populate("topics");
+    const levels = await Level.find({ isRemoved: false }).populate({
+      path: "topics",
+      match: { isRemoved: false },
+    });
 
-    if (level.length != 0) {
+    if (levels.length != 0) {
+      res.status(200).json({
+        message: "All Levels found!",
+        levels,
+        requestForm,
+      });
+    } else {
+      res.status(200).json({
+        message: "Cannot find any Level!",
+        levels: [],
+      });
+    }
+  } catch (err) {
+    res.status(404).json({
+      message: "Cannot find any Level!",
+      err,
+      requestForm,
+    });
+  }
+});
+
+//GET Method: get a specific level
+router.get("/:levelId", async (req, res) => {
+  const requestForm = {
+    method: "GET",
+    url: "/levels/",
+  };
+
+  const id = req.params.levelId;
+
+  try {
+    const level = await Level.findOne({ _id: id, isRemoved: false });
+
+    if (level) {
       res.status(200).json({
         message: "All Levels found!",
         level,
@@ -47,7 +83,7 @@ router.post("/", async (req, res) => {
       type: Number,
       default: 0,
       required: true,
-      unique: true
+      unique: true,
     },
     isRemoved: {
       type: Boolean,
@@ -71,7 +107,6 @@ router.post("/", async (req, res) => {
         requestForm,
       });
     } else {
-      console.log("[levelRoutes.js] *error at levelRoutes.js ")
       res.status(500).json({
         message: "Cannot create level!",
         level: result,
@@ -79,12 +114,74 @@ router.post("/", async (req, res) => {
       });
     }
   } catch (err) {
-    console.log("[levelRoutes.js] *error: ", err)
-
+    console.log(err);
     res.status(500).json({
       message: "Cannot create level!",
       err,
       requestForm,
+    });
+  }
+});
+
+// PUT Method: Edit a Level
+router.put("/:levelId", async (req, res) => {
+  const requestForm = {
+    method: "PUT",
+    url: "/levels/",
+    name: {
+      type: "String",
+      default: "New Level",
+    },
+    order: {
+      type: Number,
+      default: 0,
+      required: true,
+      unique: true,
+    },
+    isRemoved: {
+      type: Boolean,
+      default: false,
+    },
+  };
+
+  const id = req.params.levelId;
+  const updateOps = {};
+  for (const [key, val] of Object.entries(req.body)) {
+    updateOps[key] = val;
+  }
+  try {
+    const result = await Level.findByIdAndUpdate(
+      { _id: id, isRemoved: false },
+      { $set: updateOps },
+      { new: true }
+    ).exec();
+    if (result) {
+      res.status(201).json({ level: result, requestForm });
+    }
+  } catch (err) {
+    res.status(500).json({
+      message: "Cannot edit",
+      err: err.message,
+      requestForm,
+    });
+  }
+});
+
+// Delete Method: Delete an existing Level
+router.delete("/:levelId", async (req, res) => {
+  const id = req.params.levelId;
+  try {
+    const result = await Level.findByIdAndUpdate(
+      { _id: id, isRemoved: false },
+      { $set: { isRemoved: true } }
+    ).exec();
+    if (result) {
+      res.status(201).json({ level: result });
+    }
+  } catch (err) {
+    res.status(500).json({
+      message: "Cannot delete",
+      err: err.message,
     });
   }
 });

@@ -2,11 +2,15 @@ const mongoose = require("mongoose");
 
 // Schema
 const questionSchema = new mongoose.Schema({
-  questionMedia: {
+  imageUrl: {
     type: String,
     default: "srcassets\topicImages\1608569850175-meme.jpg",
   },
   questionText: {
+    type: String,
+    required: true,
+  },
+  questionRequirement: {
     type: String,
     required: true,
   },
@@ -18,13 +22,13 @@ const questionSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  singleSelectionAnswers: {
+  singleSelection: {
     type: Array,
   },
-  fillInBlankAnswers: {
+  translate: {
     type: String,
   },
-  arrangeAnswers: {
+  arrange: {
     type: Array,
   },
   type: {
