@@ -6,11 +6,15 @@ const topicSchema = new mongoose.Schema(
     name: {
       type: String,
       default: "New Topic",
+      unique: true,
+      required: true,
     },
     imageUrl: {
       type: String,
-      default: "srcassetsavatardefaultAvatar.jpg",
+      default: "src/assets/avatar/defaultAvatar.jpg",
+      required: true,
     },
+    // Order is auto increased
     order: {
       type: Number,
       required: true,
@@ -19,6 +23,7 @@ const topicSchema = new mongoose.Schema(
     isRemoved: {
       type: Boolean,
       default: false,
+      required: true,
     },
     level: {
       type: mongoose.Types.ObjectId,

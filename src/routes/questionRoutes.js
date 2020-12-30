@@ -14,8 +14,8 @@ router.get("/", async (req, res) => {
     method: "GET",
     url: "/questions/",
   };
-  const poolId = req.query.poolId;
-  const topicId = req.query.topicId;
+  const poolId = req.query.poolId ? req.query.poolId : null;
+  const topicId = req.query.topicId ? req.query.topicId : null;
   let questions = null;
   try {
     if (poolId) {
@@ -23,20 +23,22 @@ router.get("/", async (req, res) => {
         pool: poolId,
         isRemoved: false,
       }).exec();
-    } else if (topicId) {
+    }
+    if (topicId) {
       questions = await Question.find({
         topic: topicId,
         isRemoved: false,
       }).exec();
-    } else {
+    }
+    if (!poolId && !topicId) {
       questions = await Question.find({
         isRemoved: false,
       }).exec();
     }
     if (questions.length != 0) {
       res.status(200).json({
-        message: "Found!",
-        questions: questions,
+        message: "All questions found!",
+        questions,
         requestForm,
       });
     } else {
@@ -54,6 +56,7 @@ router.get("/", async (req, res) => {
     });
   }
 });
+
 // GET Method: Get a specific Question
 router.get("/:questionId", async (req, res) => {
   const requestForm = {
@@ -62,10 +65,10 @@ router.get("/:questionId", async (req, res) => {
   };
   try {
     const id = req.params.questionId;
-    const result = await Question.find({ _id: id });
+    const result = await Question.findOne({ _id: id });
     if (result.length) {
       res.status(200).json({
-        message: "Found!",
+        message: "Question Found!",
         question: result,
         requestForm,
       });
@@ -124,13 +127,14 @@ router.post("/", async (req, res) => {
       // Init question
       const question = new Question({
         type: req.body.type,
-        questionMedia: req.body.questionMedia,
+        imageUrl: req.body.imageUrl,
         questionText: req.body.questionText,
+        questionRequirement: req.body.questionRequirement,
         pool: req.body.pool,
         isRemoved: req.body.isRemoved,
-        singleSelectionAnswers: req.body.singleSelectionAnswers,
-        fillInBlankAnswers: req.body.fillInBlankAnswers,
-        arrangeAnswers: req.body.arrangeAnswers,
+        singleSelection: req.body.singleSelection,
+        translate: req.body.translate,
+        arrange: req.body.arrange,
         code: uuidv1(),
       });
       // Save question
@@ -140,9 +144,14 @@ router.post("/", async (req, res) => {
 
       // Response
       res.status(201).json({
-        message: "New Question is created successfully!",
-        question: question,
+        message: "New Question is created and saved to Pool!",
+        question: result,
         pool: pool,
+        requestForm,
+      });
+    } else {
+      res.status(500).json({
+        message: "Request form is missing fields",
         requestForm,
       });
     }

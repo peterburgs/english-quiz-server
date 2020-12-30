@@ -9,41 +9,39 @@ const userSchema = new mongoose.Schema({
   fullName: {
     type: String,
     default: "New Learner",
+    required: false,
   },
   avatarUrl: {
     type: String,
     default: "../assets/avatar/defaultAvatar.jpg",
+    required: false,
   },
   coin: {
     type: Number,
     default: 0,
+    required: true,
   },
   currentLevelOrder: {
     type: Number,
     default: 1,
     required: true,
   },
-  dailyGoalTime: {
+  dailyGoal: {
     type: Number,
     default: 0,
+    required: true,
   },
   exp: {
     type: Number,
     default: 0,
-  },
-  isTurnOnNotification: {
-    type: Boolean,
-    default: true,
-  },
-  isTurnOnRemindingViaEmail: {
-    type: Boolean,
-    default: true,
+    required: true,
   },
   streak: {
     type: Number,
     default: 0,
+    required: true,
   },
-  progress: [
+  progresses: [
     {
       type: mongoose.Types.ObjectId,
       ref: "Progress",

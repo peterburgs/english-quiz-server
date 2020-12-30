@@ -19,7 +19,10 @@ const storage = multer.diskStorage({
 const fileFilter = (req, file, cb) => {
   // reject a file
   if (file) {
-    if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
+    if (
+      file.mimetype === "image/jpeg" ||
+      file.mimetype === "image/png"
+    ) {
       cb(null, true);
     } else {
       cb(null, false);
@@ -51,7 +54,9 @@ router.get("/", async (req, res) => {
     url: "/topics/",
   };
   try {
-    const topics = await Topic.find({ isRemoved: false }).populate("level");
+    const topics = await Topic.find({ isRemoved: false }).populate(
+      "level"
+    );
     if (topics.length != 0) {
       res.status(200).json({
         message: "All Topics found!",
@@ -83,13 +88,11 @@ router.get("/:topicId", async (req, res) => {
   };
   try {
     const id = req.params.topicId;
-    const topic = await Topic.findOne({ _id: id, isRemoved: false }).populate(
-      "level"
-    );
+    const topic = await Topic.findOne({ _id: id }).populate("level");
     if (topic.length != 0) {
       res.status(200).json({
-        message: "Found!",
-        topic: topic,
+        message: "Topic Found!",
+        topic,
         requestForm,
       });
     } else {
@@ -153,7 +156,6 @@ router.post("/", upload.single("topicImage"), async (req, res) => {
     res.status(201).json({
       message: "Create new topic successfully!",
       topic: result,
-      level,
       requestForm,
     });
   } catch (err) {
@@ -168,6 +170,7 @@ router.post("/", upload.single("topicImage"), async (req, res) => {
 });
 
 // GET Method: get image of topic
+// <== Magic route
 router.get("/topicImages/:imageName", async (req, res) => {
   const imageName = req.params.imageName;
   const options = {
@@ -188,94 +191,98 @@ router.get("/topicImages/:imageName", async (req, res) => {
 });
 
 // PUT Method: update an existing topic
-router.put("/edit/:topicId", upload.single("topicImage"), async (req, res) => {
-  const requestForm = {
-    method: "PUT",
-    url: "/topics/edit/:topicId",
-    name: {
-      type: "String",
-      default: "New Topic",
-    },
-    topicImage: {
-      type: "Image File",
-      default: "src\\assets\\defaultAvatar.jpg",
-    },
-    order: {
-      type: Number,
-      required: true,
-      unique: true,
-    },
-    isRemoved: {
-      type: Boolean,
-      default: false,
-    },
-    // Deprecated ID need to change
-    oldLevel: {
-      type: mongoose.Types.ObjectId,
-      ref: "Level",
-      required: true,
-    },
-    // Id of new level you want to update
-    level: {
-      type: mongoose.Types.ObjectId,
-      ref: "Level",
-      required: true,
-    },
-  };
-  try {
-    const id = req.params.topicId;
-    const oldLevel = await Level.findOne({
-      _id: req.body.oldLevel,
-    });
-    const level = await Level.findOne({
-      _id: req.body.level,
-    });
-
-    // Update options
-    const updateOps = {};
-    for (const [key, val] of Object.entries(req.body)) {
-      if (key != "oldLevel" && key !== "topicImage") {
-        updateOps[key] = val;
-      }
-    }
-    if (req.file) {
-      const url = "/topicImages/" + req.file.filename;
-      updateOps["imageUrl"] = url;
-    }
-    // Find and update
-    const result = await Topic.findByIdAndUpdate(
-      { _id: id },
-      { $set: updateOps },
-      { new: true, useFindAndModify: true }
-    )
-      .populate("level")
-      .exec();
-
-    if (result) {
-      const index = oldLevel.topics.findIndex((e) => {
-        return e == id;
+router.put(
+  "/edit/:topicId",
+  upload.single("topicImage"),
+  async (req, res) => {
+    const requestForm = {
+      method: "PUT",
+      url: "/topics/edit/:topicId",
+      name: {
+        type: "String",
+        default: "New Topic",
+      },
+      topicImage: {
+        type: "Image File",
+        default: "src\\assets\\defaultAvatar.jpg",
+      },
+      order: {
+        type: Number,
+        required: true,
+        unique: true,
+      },
+      isRemoved: {
+        type: Boolean,
+        default: false,
+      },
+      // Deprecated ID need to change
+      oldLevel: {
+        type: mongoose.Types.ObjectId,
+        ref: "Level",
+        required: true,
+      },
+      // Id of new level you want to update
+      level: {
+        type: mongoose.Types.ObjectId,
+        ref: "Level",
+        required: true,
+      },
+    };
+    try {
+      const id = req.params.topicId;
+      const oldLevel = await Level.findOne({
+        _id: req.body.oldLevel,
       });
-      if (index > -1) {
-        oldLevel.topics.splice(index, 1);
-        await oldLevel.save();
-        await level.topics.push(result);
-        await level.save();
-        res.status(200).json({ message: "Updated", topic: result });
-      } else {
-        res.status(500).json({
-          message: "Cannot update",
-          requestForm,
-        });
+      const level = await Level.findOne({
+        _id: req.body.level,
+      });
+
+      // Update options
+      const updateOps = {};
+      for (const [key, val] of Object.entries(req.body)) {
+        if (key != "oldLevel" && key !== "topicImage") {
+          updateOps[key] = val;
+        }
       }
+      if (req.file) {
+        const url = "/topicImages/" + req.file.filename;
+        updateOps["imageUrl"] = url;
+      }
+      // Find and update
+      const result = await Topic.findByIdAndUpdate(
+        { _id: id },
+        { $set: updateOps },
+        { new: true, useFindAndModify: true }
+      )
+        .populate("level")
+        .exec();
+
+      if (result) {
+        const index = oldLevel.topics.findIndex((e) => {
+          return e == id;
+        });
+        if (index > -1) {
+          oldLevel.topics.splice(index, 1);
+          await oldLevel.save();
+          await level.topics.push(result);
+          await level.save();
+          res.status(200).json({ message: "Updated", topic: result });
+        } else {
+          res.status(500).json({
+            message: "Cannot update",
+            requestForm,
+          });
+        }
+      }
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({
+        message: "Cannot update",
+        err: err.message,
+      });
     }
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({
-      message: "Cannot update",
-      err: err.message,
-    });
   }
-});
+);
 
 // POST Method: add questions to topic
 router.post("/edit", async (req, res) => {
@@ -307,10 +314,12 @@ router.post("/edit", async (req, res) => {
       let clonedQuestion = new Question({
         ..._.pick(question, [
           "isRemoved",
-          "questionMedia",
-          "singleSelectionAnswers",
-          "arrangeAnswers",
+          "imageUrl",
+          "singleSelection",
+          "arrange",
+          "translate",
           "questionText",
+          "questionRequirement",
           "type",
           "code",
         ]),

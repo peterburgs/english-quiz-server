@@ -24,7 +24,7 @@ router.get("/", async (req, res) => {
       });
     } else {
       res.status(200).json({
-        message: "Cannot find any Level!",
+        message: "Empty level collection",
         levels: [],
       });
     }
@@ -51,13 +51,13 @@ router.get("/:levelId", async (req, res) => {
 
     if (level) {
       res.status(200).json({
-        message: "All Levels found!",
+        message: "One level found!",
         level,
         requestForm,
       });
     } else {
       res.status(404).json({
-        message: "Cannot find any Level!",
+        message: "Cannot find Level!",
         requestForm,
       });
     }
@@ -90,11 +90,10 @@ router.post("/", async (req, res) => {
       default: false,
     },
   };
-  const body = req.body;
   const level = new Level({
-    name: body.name,
-    order: body.order,
-    isRemoved: body.isRemoved,
+    name: req.body.name,
+    order: req.body.order,
+    isRemoved: req.body.isRemoved,
   });
 
   try {
@@ -151,12 +150,16 @@ router.put("/:levelId", async (req, res) => {
   }
   try {
     const result = await Level.findByIdAndUpdate(
-      { _id: id, isRemoved: false },
+      { _id: id },
       { $set: updateOps },
       { new: true }
     ).exec();
     if (result) {
-      res.status(201).json({ level: result, requestForm });
+      res.status(201).json({
+        message: "Updated",
+        level: result,
+        requestForm,
+      });
     }
   } catch (err) {
     res.status(500).json({
@@ -172,11 +175,14 @@ router.delete("/:levelId", async (req, res) => {
   const id = req.params.levelId;
   try {
     const result = await Level.findByIdAndUpdate(
-      { _id: id, isRemoved: false },
+      { _id: id },
       { $set: { isRemoved: true } }
     ).exec();
     if (result) {
-      res.status(201).json({ level: result });
+      res.status(201).json({
+        message: "Deleted",
+        level: result,
+      });
     }
   } catch (err) {
     res.status(500).json({

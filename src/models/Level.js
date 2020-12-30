@@ -6,6 +6,7 @@ const levelSchema = new mongoose.Schema(
     name: {
       type: String,
       default: "New Level",
+      required: true,
     },
     order: {
       type: Number,
@@ -15,6 +16,7 @@ const levelSchema = new mongoose.Schema(
     isRemoved: {
       type: Boolean,
       default: false,
+      required: true,
     },
     topics: [
       {

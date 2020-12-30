@@ -15,11 +15,13 @@ const progressSchema = new mongoose.Schema({
   user: {
     type: mongoose.Types.ObjectId,
     ref: "User",
+    required: true,
   },
+  // No effect but important
   userTopic: {
     type: String,
-    unique: true,
-  }
+    unique: true, // <== Magic code
+  },
 });
 
 mongoose.model("Progress", progressSchema);

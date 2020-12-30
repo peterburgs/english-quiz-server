@@ -54,8 +54,6 @@ router.post("/signup", async (req, res) => {
         currentLevel: 1,
         dailyGoal: 0,
         exp: 0,
-        isTurnOnNotification: true,
-        isTurnOnRemindingViaEmail: true,
         streak: 0,
       });
       const userResult = await user.save();

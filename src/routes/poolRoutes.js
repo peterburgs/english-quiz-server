@@ -46,6 +46,7 @@ router.get("/", async (req, res) => {
     });
   }
 });
+
 //GET Method: get a specific pool
 router.get("/:poolId", async (req, res) => {
   const requestForm = {
@@ -54,7 +55,7 @@ router.get("/:poolId", async (req, res) => {
   };
   try {
     const id = req.params.poolId;
-    const pool = await Pool.findOne({ _id: id, isRemoved: false }).populate(
+    const pool = await Pool.findOne({ _id: id }).populate(
       "questions"
     );
     if (pool) {
@@ -79,6 +80,7 @@ router.get("/:poolId", async (req, res) => {
     });
   }
 });
+
 // POST Method: Create a new Pool
 router.post("/", async (req, res) => {
   const requestForm = {
@@ -143,7 +145,7 @@ router.put("/:poolId", async (req, res) => {
   }
   try {
     const result = await Pool.findByIdAndUpdate(
-      { _id: id, isRemoved: false },
+      { _id: id },
       { $set: updateOps },
       { new: true }
     ).exec();
@@ -164,7 +166,7 @@ router.delete("/:poolId", async (req, res) => {
   const id = req.params.poolId;
   try {
     const result = await Pool.findByIdAndUpdate(
-      { _id: id, isRemoved: false },
+      { _id: id },
       { $set: { isRemoved: true } }
     ).exec();
     if (result) {
