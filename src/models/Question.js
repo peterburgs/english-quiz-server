@@ -32,7 +32,7 @@ const questionSchema = new mongoose.Schema(
       required: false,
     },
     translate: {
-      type: String,
+      type: Array,
       required: false,
     },
     arrange: {
