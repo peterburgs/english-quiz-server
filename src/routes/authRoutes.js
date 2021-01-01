@@ -9,6 +9,10 @@ const User = mongoose.model("User");
 // Init Router
 const router = express.Router();
 
+// Middlewares
+const requireAuth = require("../middlewares/requireAuth");
+const requireAdmin = require("../middlewares/requireAdmin");
+
 // POST method: Sign Up
 router.post("/signup", async (req, res) => {
   const { email, password, role, isActive } = req.body;
@@ -79,7 +83,7 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-// POST method: Sign In
+// POST method: Sign In as learner
 router.post("/signin", async (req, res) => {
   const { email, password } = req.body;
   const requestForm = {
@@ -95,9 +99,7 @@ router.post("/signin", async (req, res) => {
       requestForm,
     });
   }
-
   const userCredential = await UserCredential.findOne({ email });
-
   // Validate email is existed or not
   if (!userCredential) {
     return res.status(404).json({
@@ -105,7 +107,58 @@ router.post("/signin", async (req, res) => {
       requestForm,
     });
   }
+  // Compare registered email and providing email
+  try {
+    await userCredential.comparePassword(password);
 
+    const token = jwt.sign(
+      { userCredential: userCredential._id },
+      String(process.env.SECRET_KEY),
+      {
+        // Expiration Time
+        expiresIn: "1h",
+      }
+    );
+    res.status(200).json({
+      userCredential,
+      message: "Success",
+      token,
+      expiresIn: 1,
+      requestForm,
+    });
+  } catch (err) {
+    console.log("[authRoutes.js] *err: ", err);
+    return res.status(422).json({
+      error: "Invalid email or password",
+      requestForm,
+    });
+  }
+});
+
+// POST method: Sign In as ADMIN
+router.post("/signin/admin", async (req, res) => {
+  const { email, password } = req.body;
+  const requestForm = {
+    method: "POST",
+    url: "/signin/admin",
+    email: { type: "String", required: true },
+    password: { type: "String", required: true },
+  };
+  // Validate empty input
+  if (!email || !password) {
+    return res.status(422).json({
+      error: "Email or Password is incorrect",
+      requestForm,
+    });
+  }
+  const userCredential = await UserCredential.findOne({ email });
+  // Validate email is existed or not
+  if (!userCredential || userCredential.role === 2) {
+    return res.status(404).json({
+      error: "Email not found",
+      requestForm,
+    });
+  }
   // Compare registered email and providing email
   try {
     await userCredential.comparePassword(password);
