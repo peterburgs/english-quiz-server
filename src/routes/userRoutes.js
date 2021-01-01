@@ -17,14 +17,14 @@ router.get("/:userCredentialId", async (req, res) => {
   try {
     const id = req.params.userCredentialId;
     const user = await User.find({ userCredential: id }).populate(
-      "progress"
+      "progresses"
     );
-    const progress = user.progress;
+    const progress = user.progresses;
     if (user.length) {
       res.status(200).json({
         message: "Success!",
         user,
-        progress,
+        progresses,
         requestForm,
       });
     } else {
@@ -50,13 +50,13 @@ router.get("/", async (req, res) => {
     const user = await User.findOne({
       userCredential: req.userCredential,
     })
-      .populate("progress")
+      .populate("progresses")
       .exec();
     if (user) {
       res.status(200).json({
         message: "Found",
         user: user,
-        progress: user.progress,
+        progresses: user.progresses,
       });
     } else {
       res.status(404).json({

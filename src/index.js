@@ -36,6 +36,7 @@ const topicRoutes = require("./routes/topicRoutes");
 const progressRoutes = require("./routes/progressRoutes");
 const poolRoutes = require("./routes/poolRoutes");
 const questionRoutes = require("./routes/questionRoutes");
+const demoRoutes = require("./routes/demoRoutes");
 
 //Define app
 const app = express();
@@ -70,6 +71,7 @@ app.use("/topics", topicRoutes);
 app.use("/progresses", progressRoutes);
 app.use("/pools", poolRoutes);
 app.use("/questions", questionRoutes);
+app.use("/demo", demoRoutes);
 
 // GET
 app.get("/", requireAuth, (req, res) => {
