@@ -211,17 +211,41 @@ router.put("/:questionId", upload.single("questionImage"), async (req, res) => {
   try {
     const questionId = req.params.questionId;
 
+    let singleSelection = [];
+    if (req.body.singleSelection) {
+      singleSelection = [...JSON.parse(req.body.singleSelection)];
+    }
+    let arrange = [];
+    if (req.body.arrange) {
+      arrange = [...JSON.parse(req.body.arrange)];
+    }
+    let translate = [];
+    if (req.body.translate) {
+      translate = [...JSON.parse(req.body.translate)];
+    }
+
     // Update options
     const updateOps = {};
     for (const [key, val] of Object.entries(req.body)) {
-      if (key !== "questionImages") {
+      if (
+        key !== "questionImages" &&
+        key !== "singleSelection" &&
+        key !== "arrange" &&
+        key !== "translate"
+      ) {
         updateOps[key] = val;
       }
     }
+
+    updateOps["singleSelection"] = singleSelection;
+    updateOps["translate"] = translate;
+    updateOps["arrange"] = arrange;
+
     if (req.file) {
       const url = "/questionImages/" + req.file.filename;
       updateOps["questionImages"] = url;
     }
+
     // Find and update
     const result = await Question.findByIdAndUpdate(
       { _id: questionId },

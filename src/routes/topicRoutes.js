@@ -51,7 +51,9 @@ router.get("/", async (req, res) => {
     url: "/topics/",
   };
   try {
-    const topics = await Topic.find({ isRemoved: false }).populate("level");
+    const topics = await Topic.find({ isRemoved: false }).populate(
+      "level questions"
+    );
     const allTopics = await Topic.find();
     if (topics.length != 0) {
       res.status(200).json({
@@ -64,6 +66,7 @@ router.get("/", async (req, res) => {
       res.status(200).json({
         message: "Cannot find any Topic!",
         requestForm,
+        count: 0,
         topics: [],
       });
     }
