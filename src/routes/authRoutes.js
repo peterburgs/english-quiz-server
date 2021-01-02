@@ -44,7 +44,7 @@ router.post("/signup", async (req, res) => {
     String(process.env.SECRET_KEY),
     {
       // Expiration Time
-      expiresIn: "1h",
+      expiresIn: "8h",
     }
   );
   try {
@@ -116,14 +116,14 @@ router.post("/signin", async (req, res) => {
       String(process.env.SECRET_KEY),
       {
         // Expiration Time
-        expiresIn: "1h",
+        expiresIn: "8h",
       }
     );
     res.status(200).json({
       userCredential,
       message: "Success",
       token,
-      expiresIn: 1,
+      expiresIn: 8,
       requestForm,
     });
   } catch (err) {
@@ -168,14 +168,14 @@ router.post("/signin/admin", async (req, res) => {
       String(process.env.SECRET_KEY),
       {
         // Expiration Time
-        expiresIn: "1h",
+        expiresIn: "8h",
       }
     );
     res.status(200).json({
       userCredential,
       message: "Success",
       token,
-      expiresIn: 1,
+      expiresIn: 8,
       requestForm,
     });
   } catch (err) {
