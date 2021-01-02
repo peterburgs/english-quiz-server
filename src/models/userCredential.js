@@ -2,8 +2,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 require("mongoose-type-email");
 
-mongoose.SchemaTypes.Email.defaults.message =
-  "Email address is invalid";
+mongoose.SchemaTypes.Email.defaults.message = "Email address is invalid";
 // Schema
 const userCredentialSchema = new mongoose.Schema(
   {
@@ -23,7 +22,7 @@ const userCredentialSchema = new mongoose.Schema(
       default: 2,
     },
     isActive: {
-      type: String,
+      type: Boolean,
       default: true,
       required: true,
     },
@@ -52,24 +51,18 @@ userCredentialSchema.pre("save", function (next) {
 });
 
 // Compare correct password with candidatePassword
-userCredentialSchema.methods.comparePassword = function (
-  candidatePassword
-) {
+userCredentialSchema.methods.comparePassword = function (candidatePassword) {
   const user = this;
   return new Promise((resolve, reject) => {
-    bcrypt.compare(
-      candidatePassword,
-      user.password,
-      (err, isMatch) => {
-        if (err) {
-          return reject(err);
-        }
-        if (!isMatch) {
-          return reject(false);
-        }
-        resolve(true);
+    bcrypt.compare(candidatePassword, user.password, (err, isMatch) => {
+      if (err) {
+        return reject(err);
       }
-    );
+      if (!isMatch) {
+        return reject(false);
+      }
+      resolve(true);
+    });
   });
 };
 

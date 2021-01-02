@@ -55,7 +55,7 @@ router.post("/signup", async (req, res) => {
         fullName: userCredential.role == 1 ? "Admin" : "New Learner",
         avatarUrl: "../assets/defaultAvatar.jpg",
         coin: 0,
-        currentLevel: 1,
+        currentLevelOrder: 1,
         dailyGoal: 0,
         exp: 0,
         streak: 0,
@@ -104,6 +104,13 @@ router.post("/signin", async (req, res) => {
   if (!userCredential) {
     return res.status(404).json({
       error: "Email not found",
+      requestForm,
+    });
+  }
+  // Validate user
+  if (userCredential.isActive === false) {
+    return res.status(403).json({
+      error: "The account is disabled",
       requestForm,
     });
   }
