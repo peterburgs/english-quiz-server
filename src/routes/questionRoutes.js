@@ -27,7 +27,10 @@ const fileFilter = (req, file, cb) => {
   // reject a file
   if (file) {
     console.log(file);
-    if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
+    if (
+      file.mimetype === "image/jpeg" ||
+      file.mimetype === "image/png"
+    ) {
       cb(null, true);
     } else {
       cb(null, false);
@@ -52,22 +55,28 @@ router.get("/", async (req, res) => {
   };
   const poolId = req.query.poolId ? req.query.poolId : null;
   const topicId = req.query.topicId ? req.query.topicId : null;
-  let questions = null;
+  const lessonOrder = req.query.lessonOrder
+    ? req.query.lessonOrder
+    : null;
+  let questions = [];
+  console.log("poolId: ", poolId);
+  console.log("topicId: ", topicId);
+  console.log("lessonOrder: ", lessonOrder);
   try {
-    if (poolId) {
+    if (poolId && !topicId && !lessonOrder) {
       questions = await Question.find({
         pool: poolId,
         isRemoved: false,
       }).exec();
-    }
-    if (topicId) {
+    } else if (!poolId && topicId && !lessonOrder) {
       questions = await Question.find({
         topic: topicId,
         isRemoved: false,
       }).exec();
-    }
-    if (!poolId && !topicId) {
+    } else if (!poolId && topicId && lessonOrder) {
       questions = await Question.find({
+        topic: topicId,
+        lessonOrder: lessonOrder,
         isRemoved: false,
       }).exec();
     }
@@ -207,66 +216,70 @@ router.get("/questionImages/:imageName", async (req, res) => {
 });
 
 // PUT Method: Update an existing question
-router.put("/:questionId", upload.single("questionImage"), async (req, res) => {
-  try {
-    const questionId = req.params.questionId;
+router.put(
+  "/:questionId",
+  upload.single("questionImage"),
+  async (req, res) => {
+    try {
+      const questionId = req.params.questionId;
 
-    let singleSelection = [];
-    if (req.body.singleSelection) {
-      singleSelection = [...JSON.parse(req.body.singleSelection)];
-    }
-    let arrange = [];
-    if (req.body.arrange) {
-      arrange = [...JSON.parse(req.body.arrange)];
-    }
-    let translate = [];
-    if (req.body.translate) {
-      translate = [...JSON.parse(req.body.translate)];
-    }
-
-    // Update options
-    const updateOps = {};
-    for (const [key, val] of Object.entries(req.body)) {
-      if (
-        key !== "questionImages" &&
-        key !== "singleSelection" &&
-        key !== "arrange" &&
-        key !== "translate"
-      ) {
-        updateOps[key] = val;
+      let singleSelection = [];
+      if (req.body.singleSelection) {
+        singleSelection = [...JSON.parse(req.body.singleSelection)];
       }
-    }
+      let arrange = [];
+      if (req.body.arrange) {
+        arrange = [...JSON.parse(req.body.arrange)];
+      }
+      let translate = [];
+      if (req.body.translate) {
+        translate = [...JSON.parse(req.body.translate)];
+      }
 
-    updateOps["singleSelection"] = singleSelection;
-    updateOps["translate"] = translate;
-    updateOps["arrange"] = arrange;
+      // Update options
+      const updateOps = {};
+      for (const [key, val] of Object.entries(req.body)) {
+        if (
+          key !== "questionImages" &&
+          key !== "singleSelection" &&
+          key !== "arrange" &&
+          key !== "translate"
+        ) {
+          updateOps[key] = val;
+        }
+      }
 
-    if (req.file) {
-      const url = "/questionImages/" + req.file.filename;
-      updateOps["questionImages"] = url;
-    }
+      updateOps["singleSelection"] = singleSelection;
+      updateOps["translate"] = translate;
+      updateOps["arrange"] = arrange;
 
-    // Find and update
-    const result = await Question.findByIdAndUpdate(
-      { _id: questionId },
-      { $set: updateOps },
-      { new: true, useFindAndModify: true }
-    ).exec();
+      if (req.file) {
+        const url = "/questionImages/" + req.file.filename;
+        updateOps["questionImages"] = url;
+      }
 
-    if (result) {
-      res.status(200).json({
-        message: "Updated",
-        question: result,
+      // Find and update
+      const result = await Question.findByIdAndUpdate(
+        { _id: questionId },
+        { $set: updateOps },
+        { new: true, useFindAndModify: true }
+      ).exec();
+
+      if (result) {
+        res.status(200).json({
+          message: "Updated",
+          question: result,
+        });
+      }
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({
+        message: "Cannot update",
+        err: err.message,
       });
     }
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({
-      message: "Cannot update",
-      err: err.message,
-    });
   }
-});
+);
 
 // Delete Method: Delete an existing Level
 router.delete("/:questionId", async (req, res) => {
