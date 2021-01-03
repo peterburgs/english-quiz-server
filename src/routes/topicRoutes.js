@@ -18,11 +18,12 @@ const storage = multer.diskStorage({
 });
 const fileFilter = (req, file, cb) => {
   // reject a file
-  if (
-    file.mimetype === "image/jpeg" ||
-    file.mimetype === "image/png"
-  ) {
-    cb(null, true);
+  if (file) {
+    if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
+      cb(null, true);
+    } else {
+      cb(null, false);
+    }
   } else {
     cb(null, false);
   }
@@ -50,17 +51,23 @@ router.get("/", async (req, res) => {
     url: "/topics/",
   };
   try {
-    const topics = await Topic.find({});
+    const topics = await Topic.find({ isRemoved: false }).populate(
+      "level questions"
+    );
+    const allTopics = await Topic.find();
     if (topics.length != 0) {
       res.status(200).json({
         message: "All Topics found!",
         topics: topics,
+        count: allTopics.length,
         requestForm,
       });
     } else {
-      res.status(404).json({
+      res.status(200).json({
         message: "Cannot find any Topic!",
         requestForm,
+        count: 0,
+        topics: [],
       });
     }
   } catch (err) {
@@ -81,11 +88,11 @@ router.get("/:topicId", async (req, res) => {
   };
   try {
     const id = req.params.topicId;
-    const topic = await Topic.find({ _id: id });
+    const topic = await Topic.findOne({ _id: id }).populate("level");
     if (topic.length != 0) {
       res.status(200).json({
-        message: "Found!",
-        topic: topic,
+        message: "Topic Found!",
+        topic,
         requestForm,
       });
     } else {
@@ -148,12 +155,12 @@ router.post("/", upload.single("topicImage"), async (req, res) => {
 
     res.status(201).json({
       message: "Create new topic successfully!",
-      result,
+      topic: result,
       level,
       requestForm,
     });
   } catch (err) {
-    console.log("[topicRoutes.js] *err");
+    console.log("[topicRoutes.js] *err", err);
     res.status(500).json({
       message: "Cannot create topic!",
       error: err.message,
@@ -164,6 +171,7 @@ router.post("/", upload.single("topicImage"), async (req, res) => {
 });
 
 // GET Method: get image of topic
+// <== Magic route
 router.get("/topicImages/:imageName", async (req, res) => {
   const imageName = req.params.imageName;
   const options = {
@@ -183,37 +191,8 @@ router.get("/topicImages/:imageName", async (req, res) => {
   });
 });
 
-// PUT Method: update image of topic
-router.put(
-  "/topicImages/:topicId",
-  upload.single("topicImage"),
-  async (req, res) => {
-    const id = req.params.topicId;
-    const topic = await Topic.findOne({ _id: id });
-    topic.imageUrl = "/topicImages/" + req.file.filename;
-    try {
-      const result = await topic.save();
-      if (result) {
-        res.status(200).json({
-          message: "Updated",
-          topic: result,
-        });
-      } else {
-        res.status(500).json({
-          message: "Failed",
-        });
-      }
-    } catch (err) {
-      res.status(500).json({
-        message: "Failed",
-        error: err.message,
-      });
-    }
-  }
-);
-
 // PUT Method: update an existing topic
-router.put("/edit/:topicId", async (req, res) => {
+router.put("/edit/:topicId", upload.single("topicImage"), async (req, res) => {
   const requestForm = {
     method: "PUT",
     url: "/topics/edit/:topicId",
@@ -221,8 +200,8 @@ router.put("/edit/:topicId", async (req, res) => {
       type: "String",
       default: "New Topic",
     },
-    imageUrl: {
-      type: "String",
+    topicImage: {
+      type: "Image File",
       default: "src\\assets\\defaultAvatar.jpg",
     },
     order: {
@@ -259,17 +238,22 @@ router.put("/edit/:topicId", async (req, res) => {
     // Update options
     const updateOps = {};
     for (const [key, val] of Object.entries(req.body)) {
-      if (key != "oldLevel") {
+      if (key != "oldLevel" && key !== "topicImage") {
         updateOps[key] = val;
       }
+    }
+    if (req.file) {
+      const url = "/topicImages/" + req.file.filename;
+      updateOps["imageUrl"] = url;
     }
     // Find and update
     const result = await Topic.findByIdAndUpdate(
       { _id: id },
       { $set: updateOps },
       { new: true, useFindAndModify: true }
-      // { useFindAndModify: true }
-    ).exec();
+    )
+      .populate("level")
+      .exec();
 
     if (result) {
       const index = oldLevel.topics.findIndex((e) => {
@@ -284,11 +268,12 @@ router.put("/edit/:topicId", async (req, res) => {
       } else {
         res.status(500).json({
           message: "Cannot update",
-          err: err.message,
+          requestForm,
         });
       }
     }
   } catch (err) {
+    console.log(err);
     res.status(500).json({
       message: "Cannot update",
       err: err.message,
@@ -315,6 +300,7 @@ router.post("/edit", async (req, res) => {
     ],
   };
   try {
+    console.log(req.body);
     let tempQuestions = req.body.questions;
     const topic = await Topic.findOne({ _id: req.body.topic }).exec();
 
@@ -326,10 +312,12 @@ router.post("/edit", async (req, res) => {
       let clonedQuestion = new Question({
         ..._.pick(question, [
           "isRemoved",
-          "questionMedia",
-          "singleSelectionAnswers",
-          "arrangeAnswers",
+          "imageUrl",
+          "singleSelection",
+          "arrange",
+          "translate",
           "questionText",
+          "questionRequirement",
           "type",
           "code",
         ]),

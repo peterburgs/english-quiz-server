@@ -36,6 +36,7 @@ const topicRoutes = require("./routes/topicRoutes");
 const progressRoutes = require("./routes/progressRoutes");
 const poolRoutes = require("./routes/poolRoutes");
 const questionRoutes = require("./routes/questionRoutes");
+const demoRoutes = require("./routes/demoRoutes");
 
 //Define app
 const app = express();
@@ -49,7 +50,7 @@ app.use(bodyParser.json());
 app.use((req, res, next) => {
   res.header(
     "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization, Email"
   );
   res.header("Access-Control-Allow-Origin", "*");
   if (req.method === "OPTIONS") {
@@ -70,6 +71,7 @@ app.use("/topics", topicRoutes);
 app.use("/progresses", progressRoutes);
 app.use("/pools", poolRoutes);
 app.use("/questions", questionRoutes);
+app.use("/demo", demoRoutes);
 
 // GET
 app.get("/", requireAuth, (req, res) => {

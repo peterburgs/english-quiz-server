@@ -1,54 +1,55 @@
 const mongoose = require("mongoose");
 
 // Schema
-const userSchema = new mongoose.Schema({
-  userCredential: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "UserCredential",
-  },
-  fullName: {
-    type: String,
-    default: "New Learner",
-  },
-  avatarUrl: {
-    type: String,
-    default: "../assets/avatar/defaultAvatar.jpg",
-  },
-  coin: {
-    type: Number,
-    default: 0,
-  },
-  currentLevelOrder: {
-    type: Number,
-    default: 1,
-    required: true,
-  },
-  dailyGoalTime: {
-    type: Number,
-    default: 0,
-  },
-  exp: {
-    type: Number,
-    default: 0,
-  },
-  isTurnOnNotification: {
-    type: Boolean,
-    default: true,
-  },
-  isTurnOnRemindingViaEmail: {
-    type: Boolean,
-    default: true,
-  },
-  streak: {
-    type: Number,
-    default: 0,
-  },
-  progress: [
-    {
-      type: mongoose.Types.ObjectId,
-      ref: "Progress",
+const userSchema = new mongoose.Schema(
+  {
+    userCredential: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "UserCredential",
     },
-  ],
-});
+    fullName: {
+      type: String,
+      default: "New Learner",
+      required: false,
+    },
+    avatarUrl: {
+      type: String,
+      default: "../assets/avatar/defaultAvatar.jpg",
+      required: false,
+    },
+    coin: {
+      type: Number,
+      default: 0,
+      required: true,
+    },
+    currentLevelOrder: {
+      type: Number,
+      default: 1,
+      required: true,
+    },
+    dailyGoal: {
+      type: Number,
+      default: 0,
+      required: true,
+    },
+    exp: {
+      type: Number,
+      default: 0,
+      required: true,
+    },
+    streak: {
+      type: Number,
+      default: 0,
+      required: true,
+    },
+    progresses: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: "Progress",
+      },
+    ],
+  },
+  { timestamps: true }
+);
 
 mongoose.model("User", userSchema);

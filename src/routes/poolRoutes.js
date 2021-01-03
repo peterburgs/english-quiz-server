@@ -22,7 +22,7 @@ router.get("/", async (req, res) => {
     },
   };
   try {
-    const pools = await Pool.find({});
+    const pools = await Pool.find({ isRemoved: false });
     // If pools are found
     if (pools.length != 0) {
       res.status(200).json({
@@ -31,13 +31,14 @@ router.get("/", async (req, res) => {
         requestForm,
       });
     } else {
-      res.status(404).json({
+      res.status(200).json({
         message: "No document found!",
+        pools: [],
         requestForm,
       });
     }
   } catch (err) {
-    console.log("[levelRoutes.js] *err: ", err);
+    console.log("[poolRoutes.js] *err: ", err);
     res.status(404).json({
       message: "No document found!",
       error: err.message,
@@ -45,6 +46,7 @@ router.get("/", async (req, res) => {
     });
   }
 });
+
 //GET Method: get a specific pool
 router.get("/:poolId", async (req, res) => {
   const requestForm = {
@@ -53,7 +55,9 @@ router.get("/:poolId", async (req, res) => {
   };
   try {
     const id = req.params.poolId;
-    const pool = await Pool.find({ _id: id }).populate("questions");
+    const pool = await Pool.findOne({ _id: id }).populate(
+      "questions"
+    );
     if (pool) {
       res.status(200).json({
         message: "Found!",
@@ -68,7 +72,7 @@ router.get("/:poolId", async (req, res) => {
       });
     }
   } catch (err) {
-    console.log("[levelRoutes.js] *err: ", err);
+    console.log("[poolRoutes.js] *err: ", err);
     res.status(404).json({
       message: "No document found!",
       error: err.message,
@@ -76,6 +80,7 @@ router.get("/:poolId", async (req, res) => {
     });
   }
 });
+
 // POST Method: Create a new Pool
 router.post("/", async (req, res) => {
   const requestForm = {
@@ -114,6 +119,63 @@ router.post("/", async (req, res) => {
       message: "Cannot create pool!",
       error: err.message,
       requestForm,
+    });
+  }
+});
+
+// PUT Method: Edit a Pool
+router.put("/:poolId", async (req, res) => {
+  const requestForm = {
+    method: "PUT",
+    url: "/pools/",
+    name: {
+      type: "String",
+      default: "New pool",
+    },
+    isRemoved: {
+      type: Boolean,
+      default: false,
+    },
+  };
+
+  const id = req.params.poolId;
+  const updateOps = {};
+  for (const [key, val] of Object.entries(req.body)) {
+    updateOps[key] = val;
+  }
+  try {
+    const result = await Pool.findByIdAndUpdate(
+      { _id: id },
+      { $set: updateOps },
+      { new: true }
+    ).exec();
+    if (result) {
+      res.status(201).json({ pool: result, requestForm });
+    }
+  } catch (err) {
+    res.status(500).json({
+      message: "Cannot edit",
+      err: err.message,
+      requestForm,
+    });
+  }
+});
+
+// Delete Method: Delete an existing pool
+router.delete("/:poolId", async (req, res) => {
+  const id = req.params.poolId;
+  try {
+    const result = await Pool.findByIdAndUpdate(
+      { _id: id },
+      { $set: { isRemoved: true } }
+    ).exec();
+    if (result) {
+      res.status(201).json({ pool: result });
+    }
+  } catch (err) {
+    res.status(500).json({
+      message: "Cannot delete",
+      err: err.message,
     });
   }
 });
