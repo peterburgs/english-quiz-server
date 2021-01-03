@@ -268,5 +268,27 @@ router.put("/:questionId", upload.single("questionImage"), async (req, res) => {
   }
 });
 
+// Delete Method: Delete an existing Level
+router.delete("/:questionId", async (req, res) => {
+  const id = req.params.questionId;
+  try {
+    const result = await Question.findByIdAndUpdate(
+      { _id: id },
+      { $set: { isRemoved: true } }
+    ).exec();
+    if (result) {
+      res.status(201).json({
+        message: "Deleted",
+        question: result,
+      });
+    }
+  } catch (err) {
+    res.status(500).json({
+      message: "Cannot delete",
+      err: err.message,
+    });
+  }
+});
+
 // Export
 module.exports = router;
