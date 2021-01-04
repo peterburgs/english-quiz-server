@@ -26,7 +26,6 @@ const storage = multer.diskStorage({
 const fileFilter = (req, file, cb) => {
   // reject a file
   if (file) {
-    console.log(file);
     if (
       file.mimetype === "image/jpeg" ||
       file.mimetype === "image/png"
@@ -59,9 +58,6 @@ router.get("/", async (req, res) => {
     ? req.query.lessonOrder
     : null;
   let questions = [];
-  console.log("poolId: ", poolId);
-  console.log("topicId: ", topicId);
-  console.log("lessonOrder: ", lessonOrder);
   try {
     if (poolId && !topicId && !lessonOrder) {
       questions = await Question.find({

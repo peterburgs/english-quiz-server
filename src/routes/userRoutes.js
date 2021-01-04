@@ -133,9 +133,7 @@ router.get("/", async (req, res) => {
   try {
     const user = await User.findOne({
       userCredential: req.userCredential,
-    })
-      .populate("progresses")
-      .exec();
+    }).exec();
     if (user) {
       res.status(200).json({
         message: "Found",
@@ -155,4 +153,32 @@ router.get("/", async (req, res) => {
     });
   }
 });
+
+// PUT Method: update user by Id
+router.put("/:userId", async (req, res) => {
+  const userId = req.params.userId;
+  const updateOps = {};
+  for (const [key, val] of Object.entries(req.body)) {
+    updateOps[key] = val;
+  }
+  try {
+    const result = await User.findByIdAndUpdate(
+      { _id: userId },
+      { $set: updateOps },
+      { new: true }
+    ).exec();
+    if (result) {
+      res.status(200).json({
+        message: "Updated",
+        user: result,
+      });
+    }
+  } catch (err) {
+    res.status(500).json({
+      message: "Cannot edit",
+      err: err.message,
+    });
+  }
+});
+
 module.exports = router;

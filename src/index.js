@@ -19,6 +19,7 @@ mongoose.connect(process.env.CONNECTION_STRING, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useCreateIndex: true,
+  // useFindAndModify: false,
 });
 // Test connection status
 mongoose.connection.on("connected", () => {
