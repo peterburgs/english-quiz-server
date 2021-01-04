@@ -22,23 +22,18 @@ const userSchema = new mongoose.Schema(
       default: 0,
       required: true,
     },
-    currentLevelOrder: {
-      type: Number,
-      default: 1,
-      required: true,
-    },
-    dailyGoal: {
-      type: Number,
-      default: 0,
-      required: true,
-    },
     exp: {
       type: Number,
       default: 0,
       required: true,
     },
-    streak: {
-      type: Number,
+    hasX2Exp: {
+      type: Boolean,
+      default: 0,
+      required: true,
+    },
+    hasX5Exp: {
+      type: Boolean,
       default: 0,
       required: true,
     },

@@ -18,6 +18,11 @@ const levelSchema = new mongoose.Schema(
       default: false,
       required: true,
     },
+    requiredExp: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
     topics: [
       {
         type: mongoose.Types.ObjectId,

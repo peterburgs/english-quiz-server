@@ -55,10 +55,9 @@ router.post("/signup", async (req, res) => {
         fullName: userCredential.role == 1 ? "Admin" : "New Learner",
         avatarUrl: "../assets/defaultAvatar.jpg",
         coin: 0,
-        currentLevelOrder: 1,
-        dailyGoal: 0,
         exp: 0,
-        streak: 0,
+        hasX2Exp: false,
+        hasX5Exp: false,
       });
       const userResult = await user.save();
 
