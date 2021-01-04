@@ -93,6 +93,7 @@ router.post("/", async (req, res) => {
   const level = new Level({
     name: req.body.name,
     order: req.body.order,
+    requiredExp: req.body.requiredExp,
     isRemoved: req.body.isRemoved,
   });
 
