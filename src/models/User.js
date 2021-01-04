@@ -42,12 +42,12 @@ const userSchema = new mongoose.Schema(
       default: 0,
       required: true,
     },
-    progresses: [
-      {
-        type: mongoose.Types.ObjectId,
-        ref: "Progress",
-      },
-    ],
+    // progresses: [
+    //   {
+    //     type: mongoose.Types.ObjectId,
+    //     ref: "Progress",
+    //   },
+    // ],
   },
   { timestamps: true }
 );
