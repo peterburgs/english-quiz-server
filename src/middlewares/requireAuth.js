@@ -31,6 +31,7 @@ module.exports = (req, res, next) => {
         const userCredentialResult = await UserCredential.findById(
           userCredential
         );
+
         req.userCredential = userCredentialResult;
         next();
       } catch (err) {

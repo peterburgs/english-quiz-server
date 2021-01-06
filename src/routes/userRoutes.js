@@ -181,4 +181,78 @@ router.put("/:userId", async (req, res) => {
   }
 });
 
+// PUT Method: update user by Id
+router.put("/:userId/purchase", async (req, res) => {
+  const userId = req.params.userId;
+  const item = req.body.item;
+  console.log(item);
+  try {
+    if (item) {
+      const user = await User.findOne({ _id: userId });
+      const result = await User.findByIdAndUpdate(
+        { _id: userId },
+        {
+          $set: {
+            hasX2Exp: item === "x2" || user.hasX2Exp,
+            hasX5Exp: item === "x5" || user.hasX5Exp,
+            coin:
+              user.coin -
+              (item === "x2" ? 30 : item === "x5" ? 50 : 0),
+          },
+        },
+        { new: true }
+      ).exec();
+      if (result) {
+        const purchasedItem = item;
+        setTimeout(
+          () => {
+            console.log("hello");
+            if (purchasedItem === "x2") {
+              (async () => {
+                await User.findByIdAndUpdate(
+                  { _id: userId },
+                  {
+                    $set: {
+                      hasX2Exp: false,
+                    },
+                  },
+                  { new: true }
+                ).exec();
+              })();
+            }
+            if (purchasedItem === "x5") {
+              (async () => {
+                await User.findByIdAndUpdate(
+                  { _id: userId },
+                  {
+                    $set: {
+                      hasX5Exp: false,
+                    },
+                  },
+                  { new: true }
+                ).exec();
+              })();
+            }
+          },
+          24 * 3600000,
+          purchasedItem
+        );
+        res.status(200).json({
+          message: "Updated",
+          user: result,
+        });
+      }
+    } else {
+      res.status(404).json({
+        message: "Missing field",
+      });
+    }
+  } catch (err) {
+    res.status(500).json({
+      message: "Cannot purchase",
+      err: err.message,
+    });
+  }
+});
+
 module.exports = router;
