@@ -115,8 +115,9 @@ router.post("/signin", async (req, res) => {
   }
   // Compare registered email and providing email
   try {
-    await userCredential.comparePassword(password);
-
+    const signinResult = await userCredential.comparePassword(
+      password
+    );
     const token = jwt.sign(
       { userCredential: userCredential._id },
       String(process.env.SECRET_KEY),
@@ -189,6 +190,46 @@ router.post("/signin/admin", async (req, res) => {
     return res.status(422).json({
       error: "Invalid email or password",
       requestForm,
+    });
+  }
+});
+
+// POST Method: reset password
+router.post("/reset", requireAuth, async (req, res) => {
+  const email = req.userCredential.email;
+  const currentPassword = req.body.currentPassword;
+  const newPassword = req.body.newPassword;
+  const userCredential = await UserCredential.findOne({ email });
+
+  // Validate email is existed or not
+  if (!userCredential) {
+    return res.status(404).json({
+      error: "Email not found",
+    });
+  }
+  // Validate user
+  if (userCredential.isActive === false) {
+    return res.status(403).json({
+      error: "The account is disabled",
+    });
+  }
+
+  // Compare registered email and providing email
+  try {
+    const signinResult = await userCredential.comparePassword(
+      currentPassword
+    );
+    console.log("Password matched!");
+    userCredential.password = newPassword;
+    await userCredential.save();
+    res.status(200).json({
+      message: "Password reseted!",
+      userCredential,
+    });
+  } catch (err) {
+    console.log("[authRoutes.js] *err: ", err);
+    return res.status(401).json({
+      error: "Password mismatched!",
     });
   }
 });
