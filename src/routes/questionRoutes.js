@@ -5,7 +5,6 @@ const path = require("path");
 // Import Models
 const Question = mongoose.model("Question");
 const Pool = mongoose.model("Pool");
-const { v1: uuidv1 } = require("uuid");
 
 const router = express.Router();
 
@@ -26,10 +25,7 @@ const storage = multer.diskStorage({
 const fileFilter = (req, file, cb) => {
   // reject a file
   if (file) {
-    if (
-      file.mimetype === "image/jpeg" ||
-      file.mimetype === "image/png"
-    ) {
+    if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
       cb(null, true);
     } else {
       cb(null, false);
@@ -54,9 +50,7 @@ router.get("/", async (req, res) => {
   };
   const poolId = req.query.poolId ? req.query.poolId : null;
   const topicId = req.query.topicId ? req.query.topicId : null;
-  const lessonOrder = req.query.lessonOrder
-    ? req.query.lessonOrder
-    : null;
+  const lessonOrder = req.query.lessonOrder ? req.query.lessonOrder : null;
   let questions = [];
   try {
     if (poolId && !topicId && !lessonOrder) {
@@ -152,6 +146,8 @@ router.post("/", upload.single("questionImage"), async (req, res) => {
         translate = [...JSON.parse(req.body.translate)];
       }
 
+      const questionLength = await (await Question.find().exec()).length;
+
       // Init question
       const question = new Question({
         type: req.body.type,
@@ -160,10 +156,11 @@ router.post("/", upload.single("questionImage"), async (req, res) => {
         questionRequirement: req.body.questionRequirement,
         pool: req.body.pool,
         isRemoved: req.body.isRemoved,
+        difficulty: req.body.difficulty,
         singleSelection,
         translate,
         arrange,
-        code: uuidv1(),
+        code: `Q-${questionLength + 1}`,
       });
       // Save question
       const result = await question.save();
@@ -212,70 +209,66 @@ router.get("/questionImages/:imageName", async (req, res) => {
 });
 
 // PUT Method: Update an existing question
-router.put(
-  "/:questionId",
-  upload.single("questionImage"),
-  async (req, res) => {
-    try {
-      const questionId = req.params.questionId;
+router.put("/:questionId", upload.single("questionImage"), async (req, res) => {
+  try {
+    const questionId = req.params.questionId;
 
-      let singleSelection = [];
-      if (req.body.singleSelection) {
-        singleSelection = [...JSON.parse(req.body.singleSelection)];
-      }
-      let arrange = [];
-      if (req.body.arrange) {
-        arrange = [...JSON.parse(req.body.arrange)];
-      }
-      let translate = [];
-      if (req.body.translate) {
-        translate = [...JSON.parse(req.body.translate)];
-      }
+    let singleSelection = [];
+    if (req.body.singleSelection) {
+      singleSelection = [...JSON.parse(req.body.singleSelection)];
+    }
+    let arrange = [];
+    if (req.body.arrange) {
+      arrange = [...JSON.parse(req.body.arrange)];
+    }
+    let translate = [];
+    if (req.body.translate) {
+      translate = [...JSON.parse(req.body.translate)];
+    }
 
-      // Update options
-      const updateOps = {};
-      for (const [key, val] of Object.entries(req.body)) {
-        if (
-          key !== "questionImages" &&
-          key !== "singleSelection" &&
-          key !== "arrange" &&
-          key !== "translate"
-        ) {
-          updateOps[key] = val;
-        }
+    // Update options
+    const updateOps = {};
+    for (const [key, val] of Object.entries(req.body)) {
+      if (
+        key !== "questionImages" &&
+        key !== "singleSelection" &&
+        key !== "arrange" &&
+        key !== "translate"
+      ) {
+        updateOps[key] = val;
       }
+    }
 
-      updateOps["singleSelection"] = singleSelection;
-      updateOps["translate"] = translate;
-      updateOps["arrange"] = arrange;
+    updateOps["singleSelection"] = singleSelection;
+    updateOps["translate"] = translate;
+    updateOps["arrange"] = arrange;
 
-      if (req.file) {
-        const url = "/questionImages/" + req.file.filename;
-        updateOps["questionImages"] = url;
-      }
+    if (req.file) {
+      const url = "/questionImages/" + req.file.filename;
+      updateOps["questionImages"] = url;
+    }
 
-      // Find and update
-      const result = await Question.findByIdAndUpdate(
-        { _id: questionId },
-        { $set: updateOps },
-        { new: true, useFindAndModify: true }
-      ).exec();
+    // Find and update
+    const result = await Question.findByIdAndUpdate(
+      { _id: questionId },
+      { $set: updateOps },
+      { new: true, useFindAndModify: true }
+    ).exec();
 
-      if (result) {
-        res.status(200).json({
-          message: "Updated",
-          question: result,
-        });
-      }
-    } catch (err) {
-      console.log(err);
-      res.status(500).json({
-        message: "Cannot update",
-        err: err.message,
+    if (result) {
+      res.status(200).json({
+        message: "Updated",
+        question: result,
       });
     }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      message: "Cannot update",
+      err: err.message,
+    });
   }
-);
+});
 
 // Delete Method: Delete an existing Level
 router.delete("/:questionId", async (req, res) => {

@@ -48,6 +48,10 @@ const questionSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    difficulty: {
+      type: String,
+      required: true,
+    },
     // lessonOrder only added when clone question from Pool to Topic
     lessonOrder: {
       type: Number,
