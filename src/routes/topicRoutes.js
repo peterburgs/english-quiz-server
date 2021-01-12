@@ -327,6 +327,7 @@ router.post("/edit", async (req, res) => {
           "questionRequirement",
           "type",
           "code",
+          "difficulty",
         ]),
         topic: topic._id,
         lessonOrder: tempQuestions[i].lessonOrder,
